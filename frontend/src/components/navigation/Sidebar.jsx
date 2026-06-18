@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Sidebar = ({ closeSidebar }) => {
   return (
@@ -29,45 +29,52 @@ const Sidebar = ({ closeSidebar }) => {
 
         <div className="space-y-5">
 
-          <Link
+          <NavLink
             to="/dashboard"
-            onClick={closeSidebar}
-            className="block"
+            git className={({ isActive }) =>
+             `block px-4 py-3 rounded-lg transition ${
+              isActive
+                ? "bg-amber-500 text-white border-l-4 border-white font-semibold"
+                 : "hover:bg-slate-800"
           >
             🏠 Dashboard
-          </Link>
+          </NavLink>
 
-          <Link
+          <NavLink
             to="/forecast"
             onClick={closeSidebar}
-            className="block"
+            className={({ isActive }) =>
+             `block px-4 py-3 rounded-lg transition ${
+              isActive
+                ? "bg-amber-500 text-white border-l-4 border-white font-semibold"
+                 : "hover:bg-slate-800"
           >
             📈 Forecast
-          </Link>
+          </NavLink>
 
-          <Link
+          <NavLink
             to="/recommendations"
             onClick={closeSidebar}
             className="block"
           >
             🤖 Recommendations
-          </Link>
+          </NavLink>
 
-          <Link
+          <NavLink
             to="/analytics"
             onClick={closeSidebar}
             className="block"
           >
             📊 Analytics
-          </Link>
+          </NavLink>
 
-          <Link
+          <NavLink
             to="/settings"
             onClick={closeSidebar}
             className="block"
           >
             ⚙️ Settings
-          </Link>
+          </NavLink>
 
         </div>
 
