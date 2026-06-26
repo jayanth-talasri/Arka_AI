@@ -5,11 +5,23 @@ const cors = require("cors");
 const pool = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
+const userRoutes = require("./routes/userRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
+const forecastRoutes = require("./routes/forecastRoutes");
+const recommendationRoutes = require("./routes/recommendationRoutes");
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/user", userRoutes);
+
+app.use("/api/settings", settingsRoutes);
+
+app.use("/api/forecast", forecastRoutes);
+
+app.use("/api/recommendations", recommendationRoutes);
 
 app.get("/", (req, res) => {
   res.send("ArkaAI Backend Running...");

@@ -4,9 +4,9 @@ const router = express.Router();
 const verifyToken = require("../middleware/authMiddleware");
 
 const {
-  getProfile
-} = require("../controllers/userController");
+  getRecommendations
+} = require("../controllers/recommendationController");
 
-router.get("/profile", verifyToken, getProfile);
+router.get("/", verifyToken, getRecommendations);
 
 module.exports = router;
