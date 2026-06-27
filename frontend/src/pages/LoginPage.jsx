@@ -1,19 +1,50 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 
+import { loginUser } from "../services/authService";
+
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+  const handleSubmit = async (e) => {
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    console.log({
+  try {
+
+    const response = await loginUser({
+
       email,
-      password,
+      password
+
     });
-  };
+
+    // Save JWT Token
+    localStorage.setItem("token", response.token);
+
+    alert("Login Successful");
+
+    navigate("/dashboard");
+
+  } catch (error) {
+
+    alert(
+
+      error.response?.data?.message ||
+
+      "Login Failed"
+
+    );
+
+  }
+
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
