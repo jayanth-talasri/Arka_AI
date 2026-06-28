@@ -3,7 +3,7 @@ import { getAnalytics } from "../services/analyticsService";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 
-import KPIcard from "../components/cards/KPIcard";
+import KPIcard from "../components/cards/KPICard";
 import ForecastChart from "../charts/ForecastChart";
 
 import WeatherCard from "../components/cards/WeatherCard";

@@ -6,7 +6,7 @@ import EnergyChart from "../charts/EnergyChart";
 import SavingsChart from "../charts/SavingsChart";
 
 import DashboardLayout from "../layouts/DashboardLayout";
-import KPIcard from "../components/cards/KPIcard";
+import KPIcard from "../components/cards/KPICard";
 
 const AnalyticalPage = () => {
   const [analytics, setAnalytics] = useState(null);
