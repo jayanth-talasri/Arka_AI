@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { getForecast } from "../services/forecastService";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import ForecastSummaryCard from "../components/cards/ForecastSummaryCard";
@@ -9,6 +12,29 @@ import DailyForecastChart from "../charts/DailyForecastChart";
 import WeeklyForecastChart from "../charts/WeeklyForecastChart";
 
 const ForecastPage = () => {
+  const [forecast, setForecast] = useState(null);
+
+  useEffect(() => {
+    const fetchForecast = async () => {
+      setLoading(true);
+      try {
+        const data = await getForecast();
+        setForecast(data);
+      } catch (error) {
+        console.error("Error fetching forecast:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchForecast();
+  }, []);
+
+const [loading, setLoading] = useState(true);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <DashboardLayout>
 
@@ -19,21 +45,21 @@ const ForecastPage = () => {
         </h1>
 
         <ForecastSummaryCard
-          generation="21.4 kWh"
-          peakTime="12 PM - 2 PM"
-          savings="58"
+          generation={`${forecast.summary.generation} kWh`}
+          peakTime={forecast.summary.peakTime}
+          savings={forecast.summary.savings}
         />
 
         <div className="mt-6">
-          <ForecastChart />
+          <ForecastChart data={forecast.hourlyforecast} />
         </div>
 
         <div className="mt-6">
-          <DailyForecastChart />
+          <DailyForecastChart data={forecast.dailyforecast} />
         </div>
 
         <div className="mt-6">
-          <WeeklyForecastChart />
+          <WeeklyForecastChart data={forecast.weeklyforecast} />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mt-6">

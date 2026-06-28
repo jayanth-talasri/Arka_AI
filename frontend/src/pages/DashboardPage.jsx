@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { getAnalytics } from "../services/analyticsService";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import KPIcard from "../components/cards/KPIcard";
@@ -8,6 +11,29 @@ import SavingsCard from "../components/cards/SavingsCard";
 import RecommendationCard from "../components/cards/RecommendationCard";
 
 const DashboardPage = () => {
+  const [analytics, setAnalytics] = useState(null);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      try {
+        const data = await getAnalytics();
+        console.log(data);
+        setAnalytics(data);
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+const [loading, setLoading] = useState(true);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <DashboardLayout>
 
@@ -19,7 +45,7 @@ const DashboardPage = () => {
 
         <KPIcard
           title="Today's Generation"
-          value="18.2 kWh"
+          value={`${analytics.summary.todayGeneration} kWh`}
         />
 
         <KPIcard
@@ -29,7 +55,7 @@ const DashboardPage = () => {
 
         <KPIcard
           title="Savings"
-          value="₹42"
+          value={`₹${analytics.summary.savings}`}
         />
 
         <KPIcard

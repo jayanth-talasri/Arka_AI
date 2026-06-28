@@ -1,7 +1,28 @@
+import { useEffect, useState } from "react";
+import { getRecommendations } from "../services/recommendationService";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 import RecommendationCard from "../components/cards/RecommendationCard";
 
 const RecommendationsPage = () => {
+  const [recommendations, setRecommendations] = useState([]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const data = await getRecommendations();
+        setRecommendations(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
+
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -12,30 +33,17 @@ const RecommendationsPage = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
 
-          <RecommendationCard
-            appliance="Washing Machine"
-            time="11:30 AM"
-            saving="₹8"
-          />
+          {
+          recommendations.map((item) => (
 
           <RecommendationCard
-            appliance="Water Heater"
-            time="12:15 PM"
-            saving="₹12"
+              key={item.id}
+              appliance={item.title}
+              time={item.priority}
+              description={item.description}
           />
-
-          <RecommendationCard
-            appliance="Charge EV"
-            time="1:00 PM"
-            saving="₹25"
-          />
-
-          <RecommendationCard
-            appliance="Water Pump"
-            time="12:45 PM"
-            saving="₹10"
-          />
-
+        ))
+      }
         </div>
 
       </div>

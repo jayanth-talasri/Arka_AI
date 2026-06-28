@@ -61,7 +61,7 @@ const LoginPage = () => {
             label="Email"
             type="email"
             placeholder="Enter email"
-            value={email}
+            autoComplete="email"
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -69,14 +69,16 @@ const LoginPage = () => {
             label="Password"
             type="password"
             placeholder="Enter password"
-            value={password}
+            autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Button
-            text="Login"
-            className="bg-amber-500 text-white w-full mt-4"
-          />
+          <button
+            type="submit"
+            className="bg-amber-500 text-white w-full mt-4 py-2 rounded-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Login
+          </button>
 
         </form>
 

@@ -1,6 +1,22 @@
+import { useEffect, useState } from "react";
+
+import {
+  getSettings,
+  updateSettings,
+} from "../services/settingsService";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 const SettingsPage = () => {
+const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const data = await getSettings();
+      setSettings(data);
+    };
+
+    fetchSettings();
+  }, []);
+
   return (
     <DashboardLayout>
 

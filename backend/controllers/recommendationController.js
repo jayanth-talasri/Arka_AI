@@ -12,7 +12,7 @@ const getRecommendations = async (req, res) => {
         id: 2,
         title: "Charge Electric Vehicle",
         description: "Charge during peak solar generation to reduce grid usage.",
-        priority: "Medium"
+        priority: "Low"
       },
       {
         id: 3,

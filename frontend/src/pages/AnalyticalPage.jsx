@@ -1,7 +1,39 @@
+import { useEffect, useState } from "react";
+import { getAnalytics } from "../services/analyticsService";
+
+import HistoricalChart from "../charts/HistoricalChart";
+import EnergyChart from "../charts/EnergyChart";
+import SavingsChart from "../charts/SavingsChart";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 import KPIcard from "../components/cards/KPIcard";
 
 const AnalyticalPage = () => {
+  const [analytics, setAnalytics] = useState(null);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const data = await getAnalytics();
+        setAnalytics(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+const [loading, setLoading] = useState(true);
+if (loading) {
+  return (
+    <DashboardLayout>
+      <h1 className="text-2xl font-bold">
+        Loading Analytics...
+      </h1>
+    </DashboardLayout>
+  );
+}
   return (
     <DashboardLayout>
 
@@ -9,37 +41,41 @@ const AnalyticalPage = () => {
         Analytics
       </h1>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-4 gap-6">
 
         <KPIcard
-          title="Total Generation"
-          value="127 kWh"
+          title="Today's Generation"
+          value={`${analytics.summary.todayGeneration} kWh`}
+        />
+
+        <KPIcard
+          title="Monthly Generation"
+          value={`${analytics.summary.monthlyGeneration} kWh`}
         />
 
         <KPIcard
           title="Total Savings"
-          value="₹412"
+          value={`₹${analytics.summary.savings}`}
         />
 
         <KPIcard
-          title="Average Production"
-          value="18.2 kWh"
+          title="Carbon Saved"
+          value={`${analytics.summary.carbonSaved} kg`}
         />
-
       </div>
 
       <div className="bg-white mt-8 rounded-xl shadow p-6 h-80">
-        Historical Chart
+        <HistoricalChart data={analytics.historical} />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mt-8">
 
         <div className="bg-white rounded-xl shadow p-6 h-80">
-          Energy Chart
+          <EnergyChart data={analytics.dailyForecast} />
         </div>
 
         <div className="bg-white rounded-xl shadow p-6 h-80">
-          Savings Chart
+          <SavingsChart data={analytics.summary.savings} />
         </div>
 
       </div>

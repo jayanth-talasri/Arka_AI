@@ -7,15 +7,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { time: "8AM", energy: 2 },
-  { time: "10AM", energy: 5 },
-  { time: "12PM", energy: 8 },
-  { time: "2PM", energy: 7 },
-  { time: "4PM", energy: 4 },
-];
-
-const ForecastChart = () => {
+const ForecastChart = ({ data }) => {
   return (
     <div className="bg-white p-5 rounded-xl shadow">
 
@@ -31,6 +23,8 @@ const ForecastChart = () => {
           <Line
             type="monotone"
             dataKey="energy"
+            stroke="#f59e0b"
+            strokeWidth={3}
           />
         </LineChart>
       </ResponsiveContainer>
