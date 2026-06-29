@@ -26,8 +26,9 @@ const LoginPage = () => {
     });
 
     // Save JWT Token
-    localStorage.setItem("token", response.token);
-
+    const { login } = useAuth();
+    login(response.token);
+    
     alert("Login Successful");
 
     navigate("/dashboard");
