@@ -4,6 +4,8 @@ import { getRecommendations } from "../services/recommendationService";
 import DashboardLayout from "../layouts/DashboardLayout";
 import RecommendationCard from "../components/cards/RecommendationCard";
 
+import { toast } from "react-toastify";
+
 const RecommendationsPage = () => {
   const [recommendations, setRecommendations] = useState([]);
 
@@ -12,11 +14,12 @@ const RecommendationsPage = () => {
       try {
         const data = await getRecommendations();
         setRecommendations(data);
+        toast.success("Recommendations loaded successfully!", {
+          toastId: "recommendations-success",
+        });
       } catch (error) {
-        console.error(error);
-      } finally {
-        // setLoading(false);
-      }
+        toast.error(error.response?.data?.message || "Failed to load recommendations");
+      } 
     };
 
     fetchRecommendations();

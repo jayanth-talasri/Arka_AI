@@ -5,9 +5,11 @@ import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 
 import { loginUser } from "../services/authService";
-
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,25 +26,19 @@ const LoginPage = () => {
       password
 
     });
+    console.log("LOGIN RESPONSE:", response);
 
     // Save JWT Token
-    const { login } = useAuth();
-    login(response.token);
     
-    alert("Login Successful");
+    login(response.token);
+
+    toast.success("Login Successful");
 
     navigate("/dashboard");
 
   } catch (error) {
-
-    alert(
-
-      error.response?.data?.message ||
-
-      "Login Failed"
-
-    );
-
+    console.error("FULL ERROR:", error);
+    toast.error(error.message?.message ||"Login Failed");
   }
 
 };

@@ -9,6 +9,7 @@ import ForecastPage from "../pages/ForecastPage";
 import AnalyticalPage from "../pages/AnalyticalPage";
 import RecommendationsPage from "../pages/RecommendationsPage";
 import SettingsPage from "../pages/SettingsPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ function AppRoutes() {
       <Route path="/analytics" element={<ProtectedRoute><AnalyticalPage /></ProtectedRoute>} />
       <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

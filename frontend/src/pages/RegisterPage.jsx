@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
+import { toast } from "react-toastify";
+import { registerUser } from "../services/authService";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -16,11 +18,20 @@ const RegisterPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
-  };
+  try {
+    const response = await registerUser(formData);
+
+    console.log(response);
+
+    toast.success("Registration Successful");
+
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Registration Failed");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -57,6 +68,7 @@ const RegisterPage = () => {
           />
 
           <Button
+            type="submit"
             text="Register"
             className="bg-amber-500 text-white w-full mt-4"
           />

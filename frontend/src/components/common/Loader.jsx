@@ -1,7 +1,13 @@
-const Loader = () => {
+const Loader = ({ text = "Loading..." }) => {
   return (
-    <div className="flex justify-center items-center p-8">
-      <div className="animate-spin h-10 w-10 border-b-2 border-amber-500 rounded-full"></div>
+    <div className="flex justify-center items-center py-20">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent mx-auto"></div>
+
+        <p className="mt-4 text-gray-600 font-medium">
+          {text}
+        </p>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { toast } from "react-toastify";
 import {
   getSettings,
   updateSettings,
@@ -25,7 +25,7 @@ const SettingsPage = () => {
         const data = await getSettings();
         setSettings(data);
       } catch (error) {
-        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to load settings");
       } finally {
         setLoading(false);
       }
@@ -47,10 +47,9 @@ const SettingsPage = () => {
 
     try {
       await updateSettings(settings);
-      alert("Settings Updated Successfully");
+      toast.success("Settings Updated Successfully");
     } catch (error) {
-      console.error(error);
-      alert("Failed to Save Settings");
+      toast.error(error.response?.data?.message || "Failed to Save Settings");
     }
   };
 
