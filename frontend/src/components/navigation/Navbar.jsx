@@ -27,9 +27,10 @@ const Navbar = () => {
 
         <div className="flex gap-8">
 
+          
+          <a href="#benefitsSection">Benefits</a>
+          <a href="#demoSection">Demo</a>
           <a href="#features">Features</a>
-          <a href="#benefits">Benefits</a>
-          <a href="#demo">Demo</a>
           <a href="#contact">Contact</a>
 
         </div>

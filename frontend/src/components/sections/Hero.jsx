@@ -5,7 +5,7 @@ const Hero = () => {
     <section className="py-24 px-6">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
-        <div>
+        <div className="text-center md:text-left">
           <h1 className="text-5xl font-bold text-slate-800 leading-tight">
             Smarter Solar Energy
             <span className="text-amber-500"> Forecasting</span>
@@ -17,23 +17,25 @@ const Hero = () => {
             and maximize savings with intelligent recommendations.
           </p>
 
-          <div className="mt-8 flex gap-4">
+          <div className="mt-8 flex gap-6 justify-center md:justify-start">
             <Link
               to="/register"
               className="bg-amber-500 text-white px-6 py-3 rounded-lg"
             >
               Get Started
             </Link>
-
-            <button className="border px-6 py-3 rounded-lg">
+            <Link
+              to="/"
+              className="bg-amber-500 text-white px-6 py-3 rounded-lg"
+            >
               View Demo
-            </button>
+            </Link>
           </div>
         </div>
 
         <div>
           <img
-            src="/hero.png"
+            src="/favicon.jpg"
             alt="ArkaAI"
             className="rounded-xl shadow-lg"
           />
