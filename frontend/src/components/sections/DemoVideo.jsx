@@ -45,7 +45,7 @@ const DemoSection = () => {
 
             <FaPlayCircle />
 
-            Watch Full Demo
+            Download Brochure
 
           </button>
           

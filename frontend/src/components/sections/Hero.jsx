@@ -25,10 +25,10 @@ const Hero = () => {
               Get Started
             </Link>
             <Link
-              to="/"
+              to="/DemoVideo"
               className="bg-amber-500 text-white px-6 py-3 rounded-lg"
             >
-              View Demo
+              Explore Features
             </Link>
           </div>
         </div>

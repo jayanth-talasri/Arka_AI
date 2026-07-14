@@ -26,21 +26,26 @@ const Navbar = () => {
         </div>
 
         <div className="flex gap-8">
-
-          
           <a href="#benefitsSection">Benefits</a>
-          <a href="#demoSection">Demo</a>
           <a href="#features">Features</a>
+          <a href="#testimonials">Testimonials</a>
           <a href="#contact">Contact</a>
-
         </div>
 
-        <Link
-          to="/login"
-          className="bg-amber-500 text-white px-5 py-2 rounded-lg"
-        >
-          Login
-        </Link>
+        <div className="mt-1 flex gap-6 justify-center">
+          <Link
+            to="/login"
+            className="bg-amber-500 text-white px-5 py-2 rounded-lg"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="bg-amber-500 text-white px-5 py-2 rounded-lg"
+          >
+            signup
+          </Link>
+        </div>
 
       </nav>
 
