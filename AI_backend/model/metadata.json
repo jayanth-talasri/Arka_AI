@@ -1,0 +1,8 @@
+{
+    "project": "ArkaAI",
+    "version": "1.0.0",
+    "model_type": "LSTM",
+    "dataset": "NASA POWER",
+    "status": "Training",
+    "author": "Jayanth Talasri"
+}
