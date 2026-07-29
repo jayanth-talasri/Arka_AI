@@ -1,71 +1,108 @@
 import os
 import joblib
+import numpy as np
 import pandas as pd
 
-from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping
 
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
-
+from sklearn.model_selection import train_test_split
 
 # -----------------------------
 # Load Dataset
 # -----------------------------
 
-df = pd.read_csv("dataset.csv")
+print("Loading processed dataset...")
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Example Features
-
-X = df[[
-    "radiation",
-    "temperature",
-    "humidity",
-    "wind_speed"
-]]
-
-y = df["solar_generation"]
-
-
-# -----------------------------
-# Scaling
-# -----------------------------
-
-scaler_X = MinMaxScaler()
-scaler_y = MinMaxScaler()
-
-X_scaled = scaler_X.fit_transform(X)
-
-y_scaled = scaler_y.fit_transform(
-    y.values.reshape(-1,1)
+DATA_PATH = os.path.join(
+    BASE_DIR,
+    "data",
+    "processed",
+    "processed_dataset.csv"
 )
 
+df = pd.read_csv(DATA_PATH)
+
+print(df.head())
 
 # -----------------------------
-# Convert to Sequences
+# Load Scalers
 # -----------------------------
 
-time_steps = 7
+scaler_x = joblib.load(
+    os.path.join(BASE_DIR, "scaler", "scaler_x.pkl")
+)
 
-X_train = []
-y_train = []
+scaler_y = joblib.load(
+    os.path.join(BASE_DIR, "scaler", "scaler_y.pkl")
+)
 
-for i in range(len(X_scaled)-time_steps):
+# -----------------------------
+# Features
+# -----------------------------
 
-    X_train.append(
-        X_scaled[i:i+time_steps]
+X = df[
+    [
+        "radiation",
+        "temperature",
+        "humidity",
+        "wind_speed"
+    ]
+].values
+
+y = df["radiation"].values.reshape(-1, 1)
+
+# -----------------------------
+# Scale
+# -----------------------------
+
+X_scaled = scaler_x.transform(X)
+
+y_scaled = scaler_y.transform(y)
+
+# -----------------------------
+# Sequence Length
+# -----------------------------
+
+sequence_length = 7
+
+X_sequences = []
+
+y_sequences = []
+
+for i in range(sequence_length, len(X_scaled)):
+
+    X_sequences.append(
+        X_scaled[i-sequence_length:i]
     )
 
-    y_train.append(
-        y_scaled[i+time_steps]
+    y_sequences.append(
+        y_scaled[i]
     )
 
+X_sequences = np.array(X_sequences)
 
-import numpy as np
+y_sequences = np.array(y_sequences)
 
-X_train = np.array(X_train)
-y_train = np.array(y_train)
+print()
 
+print("Input Shape:", X_sequences.shape)
+
+print("Output Shape:", y_sequences.shape)
+
+# -----------------------------
+# Train Test Split
+# -----------------------------
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_sequences,
+    y_sequences,
+    test_size=0.2,
+    random_state=42
+)
 
 # -----------------------------
 # Build LSTM
@@ -76,48 +113,94 @@ model = Sequential()
 model.add(
     LSTM(
         64,
-        input_shape=(time_steps,4)
+        return_sequences=True,
+        input_shape=(sequence_length, 4)
     )
 )
 
-model.add(Dense(32,activation="relu"))
-
-model.add(Dense(1))
-
-model.compile(
-    optimizer="adam",
-    loss="mse"
+model.add(
+    Dropout(0.2)
 )
 
+model.add(
+    LSTM(32)
+)
+
+model.add(
+    Dropout(0.2)
+)
+
+model.add(
+    Dense(16, activation="relu")
+)
+
+model.add(
+    Dense(1)
+)
+
+model.compile(
+
+    optimizer="adam",
+
+    loss="mse",
+
+    metrics=["mae"]
+
+)
+
+model.summary()
+
+# -----------------------------
+# Early Stopping
+# -----------------------------
+
+early_stop = EarlyStopping(
+
+    monitor="val_loss",
+
+    patience=10,
+
+    restore_best_weights=True
+
+)
 
 # -----------------------------
 # Train
 # -----------------------------
 
-model.fit(
+history = model.fit(
+
     X_train,
+
     y_train,
-    epochs=30,
-    batch_size=32
-)
 
+    validation_data=(X_test, y_test),
+
+    epochs=50,
+
+    batch_size=32,
+
+    callbacks=[early_stop]
+
+)
 
 # -----------------------------
-# Save Everything
+# Save Model
 # -----------------------------
 
-os.makedirs("training/models",exist_ok=True)
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 
-model.save("training/models/Solar_lstm.keras")
+os.makedirs(MODEL_DIR, exist_ok=True)
 
-joblib.dump(
-    scaler_X,
-    "training/models/scaler_X.pkl"
+MODEL_PATH = os.path.join(
+    MODEL_DIR,
+    "Solar_lstm.keras"
 )
 
-joblib.dump(
-    scaler_y,
-    "training/models/scaler_y.pkl"
-)
+model.save(MODEL_PATH)
+
+print()
 
 print("Model Saved Successfully")
+
+print(MODEL_PATH)
