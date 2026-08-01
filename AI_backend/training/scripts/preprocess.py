@@ -1,38 +1,24 @@
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-import joblib
 import os
 
-print("Loading merged dataset...")
+INPUT = "training/data/merged/solar_dataset.csv"
+OUTPUT = "training/data/processed/processed_dataset.csv"
 
-df = pd.read_csv("../data/merged/solar_dataset.csv")
+print("Loading Dataset...")
 
-print(df.head())
-
-print("\nDataset Shape:")
-print(df.shape)
-
-# ----------------------------------------------------
-# Create Date column from YEAR MO DY
-# ----------------------------------------------------
+df = pd.read_csv(INPUT)
 
 df["date"] = pd.to_datetime(
-    dict(
-        year=df["YEAR"],
-        month=df["MO"],
-        day=df["DY"]
+    df[["YEAR", "MO", "DY"]].rename(
+        columns={
+            "YEAR": "year",
+            "MO": "month",
+            "DY": "day"
+        }
     )
 )
 
-# ----------------------------------------------------
-# Sort Data
-# ----------------------------------------------------
-
-df = df.sort_values("date")
-
-# ----------------------------------------------------
-# Rename Columns
-# ----------------------------------------------------
+df = df.sort_values(["City", "date"])
 
 df = df.rename(columns={
     "ALLSKY_SFC_SW_DWN": "radiation",
@@ -41,88 +27,59 @@ df = df.rename(columns={
     "WS10M": "wind_speed"
 })
 
-# ----------------------------------------------------
-# Keep only required columns
-# ----------------------------------------------------
+df["month"] = df["date"].dt.month
+df["day"] = df["date"].dt.day
+df["dayofyear"] = df["date"].dt.dayofyear
+def get_season(month):
 
-df = df[
-    [
-        "date",
-        "radiation",
-        "temperature",
-        "humidity",
-        "wind_speed"
-    ]
+    if month in [12, 1, 2]:
+        return 0      # Winter
+
+    elif month in [3, 4, 5]:
+        return 1      # Summer
+
+    elif month in [6, 7, 8, 9]:
+        return 2      # Monsoon
+
+    else:
+        return 3      # Post Monsoon
+
+
+df["season"] = df["month"].apply(get_season)
+
+df["previous_radiation"] = (
+    df.groupby("City")["radiation"]
+      .shift(1)
+)
+
+df = df.dropna()
+
+columns = [
+    "City",
+    "date",
+    "month",
+    "day",
+    "dayofyear",
+    "season",
+    "temperature",
+    "humidity",
+    "wind_speed",
+    "previous_radiation",
+    "radiation"
 ]
 
-print("\nProcessed Dataset")
+df = df[columns]
+
+os.makedirs("training/data/processed", exist_ok=True)
+
+df.to_csv(OUTPUT, index=False)
 
 print(df.head())
 
-# ----------------------------------------------------
-# Features
-# ----------------------------------------------------
+print()
 
-X = df[
-    [
-        "temperature",
-        "humidity",
-        "wind_speed"
-    ]
-]
+print("Processed Shape:", df.shape)
 
-y = df["radiation"]
+print()
 
-# ----------------------------------------------------
-# Scaling
-# ----------------------------------------------------
-
-scaler_x = MinMaxScaler()
-
-scaler_y = MinMaxScaler()
-
-X_scaled = scaler_x.fit_transform(X)
-
-y_scaled = scaler_y.fit_transform(
-    y.values.reshape(-1,1)
-)
-
-# ----------------------------------------------------
-# Save Scalers
-# ----------------------------------------------------
-
-os.makedirs("../artifacts", exist_ok=True)
-
-joblib.dump(
-    scaler_x,
-    "../artifacts/scaler_x.pkl"
-)
-
-joblib.dump(
-    scaler_y,
-    "../artifacts/scaler_y.pkl"
-)
-
-print("\nScalers Saved Successfully")
-
-# ----------------------------------------------------
-# Save Processed Dataset
-# ----------------------------------------------------
-
-processed = pd.DataFrame(
-    X_scaled,
-    columns=[
-        "temperature",
-        "humidity",
-        "wind_speed"
-    ]
-)
-
-processed["radiation"] = y_scaled
-
-processed.to_csv(
-    "../data/processed/processed_dataset.csv",
-    index=False
-)
-
-print("\nProcessed Dataset Saved")
+print("Saved Successfully")
