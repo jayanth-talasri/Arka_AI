@@ -4,11 +4,11 @@ from services.nasa_service import get_nasa_weather
 from services.preprocessing import nasa_json_to_dataframe
 from services.prediction_service import predict_radiation
 from services.analytics_service import calculate_analytics
+from schemas.response_schema import AnalyticsResponse
 
 router = APIRouter()
 
-@router.get("/analytics")
-
+@router.get("/analytics", response_model=AnalyticsResponse)
 def analytics(
 
     latitude: float,

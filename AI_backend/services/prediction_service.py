@@ -1,50 +1,117 @@
-import joblib
 import numpy as np
-import pandas as pd
 
-from tensorflow.keras.models import load_model
-
-MODEL = load_model("training/model/Solar_lstm.keras")
-
-SCALER_X = joblib.load("training/model/scaler_x.pkl")
-
-SCALER_Y = joblib.load("training/model/scaler_y.pkl")
+from services.model_loader import (
+    MODEL,
+    SCALER_X,
+    SCALER_Y
+)
 
 
 def predict_radiation(df):
+
+    df = df.copy()
+
+    # ------------------------
+    # Date Features
+    # ------------------------
 
     df["month"] = df["date"].dt.month
     df["day"] = df["date"].dt.day
     df["dayofyear"] = df["date"].dt.dayofyear
 
-    df["previous_radiation"] = (
-        df["radiation"].shift(1)
-    )
+    # ------------------------
+    # Season
+    # ------------------------
 
-    df = df.dropna()
+    def season(month):
+
+        if month in [12, 1, 2]:
+            return 0
+
+        elif month in [3, 4, 5]:
+            return 1
+
+        elif month in [6, 7, 8]:
+            return 2
+
+        return 3
+
+    df["season"] = df["month"].apply(season)
+
+    # ------------------------
+    # Previous Radiation
+    # ------------------------
+
+    df["previous_radiation"] = df["radiation"].shift(1)
+
+    df = df.bfill().ffill()
+
+    # ------------------------
+    # EXACT SAME FEATURES AS TRAINING
+    # ------------------------
 
     features = df[
         [
-            "month",
-            "day",
-            "dayofyear",
             "temperature",
             "humidity",
             "wind_speed",
+            "month",
+            "day",
+            "dayofyear",
+            "season",
             "previous_radiation",
         ]
     ]
 
-    x = SCALER_X.transform(features)
+    print(features.tail())
 
-    x = np.array(x)
+    print("=" * 50)
+    print("SCALER FEATURES")
+    print(list(SCALER_X.feature_names_in_))
 
-    x = x[-7:]
+    print("\nINPUT FEATURES")
+    print(list(features.columns))
 
-    x = x.reshape(1, 7, 7)
+    print("\nSCALER SHAPE")
+    print(len(SCALER_X.feature_names_in_))
 
-    prediction = MODEL.predict(x, verbose=0)
+    print("INPUT SHAPE")
+    print(len(features.columns))
 
-    prediction = SCALER_Y.inverse_transform(prediction)
+    print("\nDTYPES")
+    print(features.dtypes)
 
-    return float(prediction[0][0])
+    print("=" * 50)
+
+    features = features[SCALER_X.feature_names_in_]
+    print(features.head())
+    X = SCALER_X.transform(features)
+    
+    print("\nPrediction Features")
+    print(features.columns.to_list())
+
+    print("\nPrediction shape")
+    print(features.shape)
+
+    sequence = 30
+
+    if len(X) < sequence:
+
+        pad = np.repeat(
+            X[0:1],
+            sequence - len(X),
+            axis=0
+        )
+        X = np.vstack([pad, X])
+
+    X = X[-sequence:]
+    X = X.reshape(1,sequence,X.shape[1])
+
+    prediction = MODEL.predict(
+        X,
+        verbose=0
+    )
+
+    radiation = SCALER_Y.inverse_transform(prediction)
+
+    return float(radiation[0][0])

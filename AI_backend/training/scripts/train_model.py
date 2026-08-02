@@ -109,7 +109,9 @@ print("Test :", X_test.shape)
 # LSTM Model
 # ----------------------------
 
-model = Sequential()
+from training.model.solar_lstm import build_model
+
+model = build_model(SEQUENCE_LENGTH, X_train.shape[2])
 
 model.add(
     LSTM(

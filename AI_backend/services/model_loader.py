@@ -1,12 +1,17 @@
 import joblib
 from tensorflow.keras.models import load_model
 
-MODEL_PATH = "training/model/solar_lstm.keras"
-SCALER_X_PATH = "training/model/scaler_x.pkl"
-SCALER_Y_PATH = "training/model/scaler_y.pkl"
+MODEL = load_model("training/model/Solar_lstm.keras")
 
-model = load_model(MODEL_PATH)
+SCALER_X = joblib.load("training/model/scaler_x.pkl")
+SCALER_Y = joblib.load("training/model/scaler_y.pkl")
 
-scaler_x = joblib.load(SCALER_X_PATH)
+print("\n==============================")
+print("SCALER FEATURES")
 
-scaler_y = joblib.load(SCALER_Y_PATH)
+if hasattr(SCALER_X, "feature_names_in_"):
+    print(SCALER_X.feature_names_in_)
+else:
+    print("No feature names stored")
+
+print("==============================\n")

@@ -1,20 +1,18 @@
 from fastapi import APIRouter
 
-from services.dashboard_service import dashboard
-from schemas.response_schema import DashboardResponse
+from services.history_service import get_history
 
 router = APIRouter()
 
-@router.get("/dashboard", response_model=DashboardResponse)
-def dashboard_api(
+@router.get("/history")
+def history(
         latitude: float,
         longitude: float,
         start: str,
         end: str
-
 ):
 
-    return dashboard(
+    return get_history(
         latitude,
         longitude,
         start,

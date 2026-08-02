@@ -1,16 +1,23 @@
 from fastapi import APIRouter
 
-router = APIRouter(
-    prefix="/forecast",
-    tags=["Forecast"]
-)
+from services.forecast_service import seven_day_forecast
 
+router = APIRouter()
 
-@router.post("/")
-def predict():
+@router.get("/forecast")
+def forecast(
+        latitude: float,
+        longitude: float,
+        start: str,
+        end: str
+):
 
     return {
-        "prediction": 6.85,
-        "unit": "kWh",
-        "confidence": 0.94
+        "forecast":
+        seven_day_forecast(
+            latitude,
+            longitude,
+            start,
+            end
+        )
     }

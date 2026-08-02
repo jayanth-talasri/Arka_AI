@@ -1,21 +1,21 @@
-# Input Features
+from dotenv import load_dotenv
+import os
 
-FEATURE_COLUMNS = [
+load_dotenv()
 
-    "T2M",
+HOST = os.getenv("HOST")
+PORT = int(os.getenv("PORT"))
 
-    "RH2M",
+TITLE = os.getenv("TITLE")
+VERSION = os.getenv("VERSION")
+DESCRIPTION = os.getenv("DESCRIPTION")
 
-    "WS2M",
+NASA_API = os.getenv("NASA_API")
 
-    "ALLSKY_SFC_SW_DWN"
+MODEL_PATH = os.getenv("MODEL_PATH")
+SCALER_X_PATH = os.getenv("SCALER_X_PATH")
+SCALER_Y_PATH = os.getenv("SCALER_Y_PATH")
 
-]
-
-# Prediction Target
-
-TARGET_COLUMN = "ALLSKY_SFC_SW_DWN"
-
-# LSTM Sequence Length
-
-SEQUENCE_LENGTH = 24
+PANEL_CAPACITY = float(os.getenv("PANEL_CAPACITY"))
+PANEL_EFFICIENCY = float(os.getenv("PANEL_EFFICIENCY"))
+UNIT_PRICE = float(os.getenv("UNIT_PRICE"))

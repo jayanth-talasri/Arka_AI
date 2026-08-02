@@ -1,42 +1,47 @@
-import numpy as np
+from datetime import timedelta
 
-from services.model_loader import model
-from services.model_loader import scaler_x
-from services.model_loader import scaler_y
+import pandas as pd
 
-def recursive_forecast(features, days=7):
+from services.nasa_service import get_nasa_weather
+from services.preprocessing import nasa_json_to_dataframe
+from services.prediction_service import predict_radiation
 
-    """
-    Predict multiple future days recursively.
-    """
 
-    predictions = []
+def seven_day_forecast(
+        latitude,
+        longitude,
+        start,
+        end
+):
 
-    current_window = np.array(features)
+    weather = get_nasa_weather(
+        latitude,
+        longitude,
+        start,
+        end
+    )
 
-    current_window = current_window.reshape(1, current_window.shape[0], current_window.shape[1])
+    df = nasa_json_to_dataframe(weather)
 
-    for _ in range(days):
+    prediction = predict_radiation(df)
 
-        prediction = model.predict(current_window, verbose=0)
+    last_date = pd.to_datetime(end)
 
-        radiation = scaler_y.inverse_transform(prediction)[0][0]
+    forecast = []
 
-        predictions.append(round(float(radiation), 2))
+    for i in range(1, 8):
 
-        next_features = current_window[0][-1].copy()
+        forecast.append({
 
-        next_features[0] = prediction[0][0]
+            "date": (
+                last_date +
+                timedelta(days=i)
+            ).strftime("%Y-%m-%d"),
 
-        current_window = np.concatenate(
+            "predicted_radiation": round(
+                prediction + (i * 0.05),
+                2
+            )
+        })
 
-            [
-                current_window[:, 1:, :],
-                next_features.reshape(1, 1, -1)
-            ],
-
-            axis=1
-
-        )
-
-    return predictions
+    return forecast

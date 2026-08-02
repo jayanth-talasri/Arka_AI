@@ -3,10 +3,11 @@ from fastapi import APIRouter
 from services.nasa_service import get_nasa_weather
 from services.preprocessing import nasa_json_to_dataframe
 from services.prediction_service import predict_radiation
+from schemas.response_schema import PredictResponse 
 
 router = APIRouter()
 
-@router.get("/predict")
+@router.get("/predict", response_model=PredictResponse)
 def predict(
         latitude: float,
         longitude: float,
