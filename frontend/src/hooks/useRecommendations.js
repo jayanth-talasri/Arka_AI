@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAppliances } from "../services/recommendationService";
+import { getAppliances } from "../services/applianceService";
 
 export default function useRecommendations(
     latitude,

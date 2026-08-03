@@ -1,6 +1,6 @@
 import aiApi from "./aiApi";
 
-export const getRecommendations = async (
+export const getAppliances = async (
     latitude,
     longitude,
     start,

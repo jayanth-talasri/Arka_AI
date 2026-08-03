@@ -1,24 +1,34 @@
-const WeatherCard = ({
-  temperature,
-  condition,
-}) => {
-  return (
-    <div className="bg-white p-5 rounded-xl shadow">
+const WeatherCard = ({ weather }) => {
 
-      <h3 className="font-semibold mb-3">
-        Weather
-      </h3>
+    if (!weather) return null;
 
-      <h2 className="text-3xl font-bold">
-        {temperature}°C
-      </h2>
+    return (
 
-      <p className="text-gray-500">
-        {condition}
-      </p>
+        <div className="bg-white rounded-xl shadow p-5">
 
-    </div>
-  );
+            <h3 className="text-lg font-semibold mb-4">
+                Current Weather
+            </h3>
+
+            <p>
+                🌡 Temperature : {weather.temperature} °C
+            </p>
+
+            <p>
+                💧 Humidity : {weather.humidity} %
+            </p>
+
+            <p>
+                🌬 Wind Speed : {weather.wind_speed} m/s
+            </p>
+
+            <p>
+                ☁ Condition : {weather.condition}
+            </p>
+
+        </div>
+
+    );
 };
 
 export default WeatherCard;

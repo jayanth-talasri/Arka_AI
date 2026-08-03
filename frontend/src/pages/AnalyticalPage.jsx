@@ -14,7 +14,12 @@ const AnalyticalPage = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const data = await getAnalytics();
+        const data = await getAnalytics(
+          17.385,
+          78.487,
+          "20240101",
+          "20240107"
+        );
         setAnalytics(data);
       } catch (error) {
         console.error(error);

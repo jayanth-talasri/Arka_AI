@@ -1,141 +1,190 @@
 import { useEffect, useState } from "react";
-import { getAnalytics } from "../services/analyticsService";
+import { toast } from "react-toastify";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 
-import KPIcard from "../components/cards/KPICard";
+import KPICard from "../components/cards/KPICard";
 import ForecastChart from "../charts/ForecastChart";
-
 import WeatherCard from "../components/cards/WeatherCard";
 import SavingsCard from "../components/cards/SavingsCard";
 import RecommendationCard from "../components/cards/RecommendationCard";
 
 import Loader from "../components/common/Loader";
 import ErrorMessage from "../components/common/ErrorMessage";
-import { toast } from "react-toastify";
 
-import usePrediction from "../hooks/usePrediction";
+import { getDashboard } from "../services/dashboardService";
 
 const DashboardPage = () => {
-  const [analytics, setAnalytics] = useState(null);
+
+  const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        setLoading(true);
 
-        const data = await getAnalytics();
+    const loadDashboard = async () => {
+
+      try {
+
+        const data = await getDashboard(
+          17.385,
+          78.487,
+          "20240101",
+          "20240107"
+        );
 
         console.log(data);
 
-        setAnalytics(data);
-        toast.success("Dashboard data loaded successfully!", {
-         
-        });
-      } catch (error) {
-        setError(error.response?.data?.message || "Failed to load dashboard data.");
-        toast.error(error.response?.data?.message || "Failed to load dashboard data.", {
-          
-        });
+        setDashboard(data);
+
+        toast.success("Dashboard Loaded Successfully");
+
+      } catch (err) {
+
+        console.error(err);
+
+        setError("Unable to load dashboard.");
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
-    fetchAnalytics();
+    loadDashboard();
+
   }, []);
 
   if (loading) {
+
     return (
+
       <DashboardLayout>
+
         <Loader text="Loading Dashboard..." />
+
       </DashboardLayout>
+
     );
+
   }
 
   if (error) {
+
     return (
+
       <DashboardLayout>
+
         <ErrorMessage
           message={error}
           onRetry={() => window.location.reload()}
         />
+
       </DashboardLayout>
+
     );
+
   }
 
   return (
+
     <DashboardLayout>
+
       <h1 className="text-3xl font-bold mb-6">
-        Welcome Jayanth
+
+        Welcome to ArkaAI ☀️
+
       </h1>
 
-      <div className="grid md:grid-cols-4 gap-4 mb-6">
+      {/* KPI Cards */}
 
-        <KPIcard
-          title="Today's Generation"
-          value={`${analytics.summary.todayGeneration} kWh`}
+      <div className="grid md:grid-cols-4 gap-5 mb-8">
+
+        <KPICard
+          title="Solar Radiation"
+          value={`${dashboard.prediction.predicted_radiation} kWh/m²`}
         />
 
-        <KPIcard
-          title="Peak Time"
-          value="12 PM - 2 PM"
+        <KPICard
+          title="Daily Energy"
+          value={`${dashboard.analytics.daily_energy} kWh`}
         />
 
-        <KPIcard
-          title="Savings"
-          value={`₹${analytics.summary.savings}`}
+        <KPICard
+          title="Daily Savings"
+          value={`₹${dashboard.analytics.daily_saving}`}
         />
 
-        <KPIcard
+        <KPICard
           title="Weather"
-          value="Sunny"
+          value={dashboard.weather.condition}
         />
 
       </div>
 
-      <ForecastChart />
+      {/* Forecast Chart */}
+
+      <ForecastChart
+        prediction={dashboard.prediction}
+      />
+
+      {/* Weather + Savings */}
 
       <div className="grid md:grid-cols-2 gap-6 mt-6">
 
         <WeatherCard
-          temperature={34}
-          condition="Sunny"
+
+          temperature={dashboard.weather.temperature}
+          humidity={dashboard.weather.humidity}
+          wind={dashboard.weather.wind_speed}
+          condition={dashboard.weather.condition}
+
         />
 
         <SavingsCard
-          amount={analytics.summary.savings}
+
+          amount={dashboard.analytics.yearly_saving}
+
         />
 
       </div>
 
-      <div className="bg-white rounded-xl shadow p-5 mt-6">
+      {/* Recommendations */}
 
-        <h2 className="text-xl font-bold mb-4">
-          AI Recommendations
+      <div className="bg-white rounded-xl shadow p-6 mt-6">
+
+        <h2 className="text-2xl font-semibold mb-4">
+
+          Recommended Appliances
+
         </h2>
 
-        <RecommendationCard
-          appliance="Washing Machine"
-          time="11:30 AM"
-        />
+        {
 
-        <RecommendationCard
-          appliance="Water Heater"
-          time="12:15 PM"
-        />
+          dashboard.appliances.recommended.map((item, index) => (
 
-        <RecommendationCard
-          appliance="EV Charging"
-          time="1:00 PM"
-        />
+            <RecommendationCard
+
+              key={index}
+
+              appliance={item}
+
+              time={dashboard.appliances.best_time}
+
+            />
+
+          ))
+
+        }
 
       </div>
 
     </DashboardLayout>
+
   );
+
 };
 
 export default DashboardPage;

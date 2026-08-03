@@ -1,32 +1,47 @@
 import {
   LineChart,
   Line,
-  XAxis,
+ XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
 
-const ForecastChart = ({ data }) => {
-  return (
-    <div className="bg-white p-5 rounded-xl shadow">
+const ForecastChart = ({ prediction }) => {
+  
+  const data = [
+    {
+      day: "Today",
+      radiation: prediction?.predicted_radiation || 0,
+    },
+  ];
 
-      <h3 className="font-semibold mb-4">
-        Hourly Forecast
+  return (
+    <div className="bg-white rounded-xl shadow p-5">
+
+      <h3 className="text-lg font-semibold mb-4">
+        Solar Forecast
       </h3>
 
       <ResponsiveContainer width="100%" height={300}>
+
         <LineChart data={data}>
-          <XAxis dataKey="time" />
+
+          <XAxis dataKey="day" />
+
           <YAxis />
+
           <Tooltip />
+
           <Line
             type="monotone"
-            dataKey="energy"
+            dataKey="radiation"
             stroke="#f59e0b"
             strokeWidth={3}
           />
+
         </LineChart>
+
       </ResponsiveContainer>
 
     </div>
