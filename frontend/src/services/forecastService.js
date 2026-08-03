@@ -1,6 +1,20 @@
-import api from "./api";
+import aiApi from "./aiApi";
 
-export const getForecast = async () => {
-  const response = await api.get("/forecast");
-  return response.data;
+export const getForecast = async (
+    latitude,
+    longitude,
+    start,
+    end
+) => {
+
+    const response = await aiApi.get("/forecast", {
+        params: {
+            latitude,
+            longitude,
+            start,
+            end
+        }
+    });
+
+    return response.data;
 };

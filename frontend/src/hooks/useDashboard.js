@@ -1,32 +1,32 @@
 import { useEffect, useState } from "react";
-import { getForecast } from "../services/forecastService";
+import { getDashboard } from "../services/dashboardService";
 
-export default function useForecast(
+export default function useDashboard(
     latitude,
     longitude,
     start,
     end
 ) {
 
-    const [forecast, setForecast] = useState([]);
+    const [dashboard, setDashboard] = useState(null);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
 
-        if (!latitude || !longitude) return;
-
         async function load() {
 
-            const data = await getForecast(
+            const data = await getDashboard(
                 latitude,
                 longitude,
                 start,
                 end
             );
 
-            setForecast(data);
+            setDashboard(data);
 
             setLoading(false);
+
         }
 
         load();
@@ -34,7 +34,8 @@ export default function useForecast(
     }, [latitude, longitude, start, end]);
 
     return {
-        forecast,
+        dashboard,
         loading
     };
+
 }

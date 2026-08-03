@@ -1,13 +1,13 @@
 import aiApi from "./aiApi";
 
-export const getAnalytics = async (
+export const getWeather = async (
     latitude,
     longitude,
     start,
     end
 ) => {
 
-    const response = await aiApi.get("/analytics", {
+    const response = await aiApi.get("/weather", {
         params: {
             latitude,
             longitude,

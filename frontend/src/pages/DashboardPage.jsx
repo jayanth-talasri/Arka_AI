@@ -14,6 +14,8 @@ import Loader from "../components/common/Loader";
 import ErrorMessage from "../components/common/ErrorMessage";
 import { toast } from "react-toastify";
 
+import usePrediction from "../hooks/usePrediction";
+
 const DashboardPage = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);

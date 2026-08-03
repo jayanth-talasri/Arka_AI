@@ -1,6 +1,20 @@
-import api from "./api";
+import aiApi from "./aiApi";
 
-export const getRecommendations = async () => {
-  const response = await api.get("/recommendations");
-  return response.data;
+export const getRecommendations = async (
+    latitude,
+    longitude,
+    start,
+    end
+) => {
+
+    const response = await aiApi.get("/appliances", {
+        params: {
+            latitude,
+            longitude,
+            start,
+            end
+        }
+    });
+
+    return response.data;
 };
