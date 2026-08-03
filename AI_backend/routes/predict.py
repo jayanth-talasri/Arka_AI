@@ -7,7 +7,7 @@ from schemas.response_schema import PredictResponse
 
 router = APIRouter()
 
-@router.get("/predict", response_model=PredictResponse)
+@router.get("", response_model=PredictResponse)
 def predict(
         latitude: float,
         longitude: float,

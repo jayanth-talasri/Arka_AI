@@ -8,7 +8,7 @@ from schemas.response_schema import AppliancesResponse
 
 router = APIRouter()
 
-@router.get("/appliances", response_model=AppliancesResponse)
+@router.get("", response_model=AppliancesResponse)
 def appliances(
     latitude: float,
     longitude: float,

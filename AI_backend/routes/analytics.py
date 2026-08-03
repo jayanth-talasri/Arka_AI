@@ -8,7 +8,7 @@ from schemas.response_schema import AnalyticsResponse
 
 router = APIRouter()
 
-@router.get("/analytics", response_model=AnalyticsResponse)
+@router.get("", response_model=AnalyticsResponse)
 def analytics(
 
     latitude: float,

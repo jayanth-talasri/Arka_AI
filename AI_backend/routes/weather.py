@@ -7,7 +7,7 @@ from schemas.response_schema import WeatherResponse
 
 router = APIRouter()
 
-@router.get("/weather", response_model=WeatherResponse)
+@router.get("", response_model=WeatherResponse)
 
 def weather(
 
