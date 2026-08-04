@@ -46,7 +46,9 @@ const ForecastPage = () => {
 
   if (loading) {
 
-    return <h2>Loading...</h2>;
+    return (<DashboardLayout>
+      <h2 className="text-2xl font-bold">Loading Forecast...</h2>
+    </DashboardLayout>);
 
   }
 

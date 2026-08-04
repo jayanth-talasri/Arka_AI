@@ -1,92 +1,70 @@
 import { useEffect, useState } from "react";
-import { getAnalytics } from "../services/analyticsService";
-
-import HistoricalChart from "../charts/HistoricalChart";
-import EnergyChart from "../charts/EnergyChart";
-import SavingsChart from "../charts/SavingsChart";
 
 import DashboardLayout from "../layouts/DashboardLayout";
-import KPIcard from "../components/cards/KPICard";
+
+import { getAnalytics } from "../services/analyticsService";
+
+import KPICard from "../components/cards/KPICard";
 
 const AnalyticalPage = () => {
-  const [analytics, setAnalytics] = useState(null);
 
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const data = await getAnalytics(
-          17.385,
-          78.487,
-          "20240101",
-          "20240107"
-        );
-        setAnalytics(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    const [data,setData]=useState(null);
 
-    fetchAnalytics();
-  }, []);
+    useEffect(()=>{
 
-const [loading, setLoading] = useState(true);
-if (loading) {
-  return (
-    <DashboardLayout>
-      <h1 className="text-2xl font-bold">
-        Loading Analytics...
-      </h1>
-    </DashboardLayout>
-  );
-}
-  return (
+        getAnalytics(
+            17.385,
+            78.487,
+            "20240101",
+            "20240107"
+        ).then(setData);
+
+    },[]);
+
+    if(!data) return <h2 className="text-2xl font-bold">Loading...</h2>;
+
+    return(
+
     <DashboardLayout>
 
-      <h1 className="text-3xl font-bold mb-6">
-        Analytics
-      </h1>
+        <div className="grid grid-cols-3 gap-5">
 
-      <div className="grid md:grid-cols-4 gap-6">
+            <KPICard
+                title="Daily Energy"
+                value={data.daily_energy}
+                unit="kWh"
+            />
 
-        <KPIcard
-          title="Today's Generation"
-          value={`${analytics.summary.todayGeneration} kWh`}
-        />
+            <KPICard
+                title="Monthly Saving"
+                value={data.monthly_saving}
+                unit="₹"
+            />
 
-        <KPIcard
-          title="Monthly Generation"
-          value={`${analytics.summary.monthlyGeneration} kWh`}
-        />
+            <KPICard
+                title="CO₂ Saved"
+                value={data.co2_saved}
+                unit="kg"
+            />
 
-        <KPIcard
-          title="Total Savings"
-          value={`₹${analytics.summary.savings}`}
-        />
+            <KPICard
+                title="Trees"
+                value={data.trees_equivalent}
+                unit=""
+            />
 
-        <KPIcard
-          title="Carbon Saved"
-          value={`${analytics.summary.carbonSaved} kg`}
-        />
-      </div>
+            <KPICard
+                title="Efficiency"
+                value={data.panel_efficiency}
+                unit="%"
+            />
 
-      <div className="bg-white mt-8 rounded-xl shadow p-6 h-80">
-        <HistoricalChart data={analytics.historical} />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6 mt-8">
-
-        <div className="bg-white rounded-xl shadow p-6 h-80">
-          <EnergyChart data={analytics.dailyForecast} />
         </div>
-
-        <div className="bg-white rounded-xl shadow p-6 h-80">
-          <SavingsChart data={analytics.summary.savings} />
-        </div>
-
-      </div>
 
     </DashboardLayout>
-  );
+
+    );
+
 };
 
 export default AnalyticalPage;

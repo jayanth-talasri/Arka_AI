@@ -1,4 +1,4 @@
-const KPIcard = ({
+const KPICard = ({
   title,
   value,
   icon,
@@ -30,4 +30,4 @@ const KPIcard = ({
   );
 };
 
-export default KPIcard;
+export default KPICard;

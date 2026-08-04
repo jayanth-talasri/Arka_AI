@@ -74,7 +74,31 @@ const Sidebar = () => {
         >
           ⚙️ Settings
         </NavLink>
-
+        <NavLink
+          to="/weather"
+          className={({ isActive }) =>
+            `block px-4 py-3 rounded-lg transition ${
+              isActive
+                ? "bg-amber-500 text-white border-l-4 border-white font-semibold"
+                : "hover:bg-slate-800"
+            }`
+          }
+        >
+          🌤️ Weather
+        </NavLink>
+        <NavLink
+          to="/History"
+          className={({ isActive }) =>
+            `block px-4 py-3 rounded-lg transition ${
+              isActive
+                ? "bg-amber-500 text-white border-l-4 border-white font-semibold"
+                : "hover:bg-slate-800"
+            }`
+          }
+        >
+          📜 History
+        </NavLink>
+        
       </div>
 
     </div>

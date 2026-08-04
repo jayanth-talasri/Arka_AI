@@ -63,7 +63,11 @@ const DashboardPage = () => {
 
       <DashboardLayout>
 
-        <Loader text="Loading Dashboard..." />
+        <h2 className="text-2xl font-bold">
+
+          Loading Dashboard...
+
+        </h2>
 
       </DashboardLayout>
 
