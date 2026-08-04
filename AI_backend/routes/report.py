@@ -7,7 +7,7 @@ from services.report_service import monthly_report
 
 router = APIRouter()
 
-@router.get("/report")
+@router.get("", response_model=dict)
 def report(
         latitude: float,
         longitude: float,

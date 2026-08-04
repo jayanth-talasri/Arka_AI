@@ -9,7 +9,7 @@ from schemas.response_schema import SavingsResponse
 router = APIRouter()
 
 
-@router.get("/savings", response_model=SavingsResponse)
+@router.get("", response_model=SavingsResponse)
 def savings(
     latitude: float,
     longitude: float,

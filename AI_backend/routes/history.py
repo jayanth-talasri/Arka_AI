@@ -4,7 +4,7 @@ from services.history_service import get_history
 
 router = APIRouter()
 
-@router.get("/history")
+@router.get("", response_model=list)
 def history(
         latitude: float,
         longitude: float,

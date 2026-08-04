@@ -8,7 +8,7 @@ from services.insights_service import generate_insights
 
 router = APIRouter()
 
-@router.get("/insights")
+@router.get("", response_model=dict)
 def insights(
         latitude: float,
         longitude: float,

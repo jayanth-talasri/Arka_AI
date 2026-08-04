@@ -1,10 +1,31 @@
 from fastapi import APIRouter
 
-from services.recommendation import generate_recommendation
+from services.nasa_service import get_nasa_weather
+from services.preprocessing import nasa_json_to_dataframe
+from services.prediction_service import predict_radiation
+from services.appliance_service import appliance_schedule
+from schemas.response_schema import  RecommdationResponse
+
 
 router = APIRouter()
 
-@router.get("/recommendation")
-def recommendation(prediction: float):
+@router.get("", response_model=RecommdationResponse)
+def recommendation(
+    latitude: float,
+    longitude: float,
+    start: str,
+    end: str
+):
 
-    return generate_recommendation(prediction)
+    weather = get_nasa_weather(
+        latitude,
+        longitude,
+        start,
+        end
+    )
+
+    df = nasa_json_to_dataframe(weather)
+
+    prediction = predict_radiation(df)
+
+    return appliance_schedule(prediction) 

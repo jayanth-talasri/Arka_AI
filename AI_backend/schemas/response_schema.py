@@ -51,6 +51,11 @@ class AppliancesResponse(BaseModel):
     best_time: str
     recommended: list[str]
 
+class RecommdationResponse(BaseModel):
+    status: str
+    best_time: str
+    recommended: list[str]
+
 class DashboardResponse(BaseModel):
     location: dict
     prediction: dict
