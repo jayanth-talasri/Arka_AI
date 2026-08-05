@@ -1,51 +1,74 @@
 import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Tooltip,
-  Cell,
+
+    PieChart,
+    Pie,
+    Cell,
+    Tooltip,
+    ResponsiveContainer
+
 } from "recharts";
 
-const COLORS = ["#f59e0b", "#0ea5e9"];
+const COLORS=[
 
-const SavingsChart = ({ savings = 0 }) => {
-  const data = [
-    {
-      name: "Savings",
-      value: savings,
-    },
-    {
-      name: "Remaining",
-      value: 100,
-    },
-  ];
+    "#16a34a",
+    "#f59e0b",
+    "#3b82f6"
 
-  return (
-    <div className="h-72">
-      <h2 className="text-xl font-semibold mb-4">
-        Savings
-      </h2>
+];
 
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={data}
-            dataKey="value"
-            outerRadius={90}
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={index}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
+const SavingsChart=({data})=>{
 
-          <Tooltip />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
-  );
+    return(
+
+        <ResponsiveContainer
+            width="100%"
+            height={320}
+        >
+
+            <PieChart>
+
+                <Pie
+
+                    data={data}
+
+                    dataKey="value"
+
+                    nameKey="name"
+
+                    outerRadius={110}
+
+                    innerRadius={70}
+
+                    paddingAngle={5}
+
+                >
+
+                    {
+
+                        data.map((entry,index)=>(
+
+                            <Cell
+
+                                key={index}
+
+                                fill={COLORS[index]}
+
+                            />
+
+                        ))
+
+                    }
+
+                </Pie>
+
+                <Tooltip/>
+
+            </PieChart>
+
+        </ResponsiveContainer>
+
+    );
+
 };
 
 export default SavingsChart;

@@ -1,24 +1,41 @@
-const AnalyticsCard = ({ analytics }) => {
+const AnalyticsCard = ({
 
-    if (!analytics) return null;
+    title,
+    children
+
+}) => {
 
     return (
 
-        <div className="bg-white rounded-xl shadow p-5">
+        <div className="
 
-            <h3 className="font-semibold text-lg mb-4">
-                Solar Analytics
-            </h3>
+            backdrop-blur-lg
+            bg-white/80
+            border
+            border-white/40
+            rounded-3xl
+            p-6
+            shadow-xl
+            hover:shadow-2xl
+            transition-all
+            duration-300
 
-            <p>Daily Energy : {analytics.daily_energy} kWh</p>
+        ">
 
-            <p>Monthly Energy : {analytics.monthly_energy} kWh</p>
+            <h2 className="
 
-            <p>Yearly Energy : {analytics.yearly_energy} kWh</p>
+                text-xl
+                font-bold
+                mb-6
+                text-gray-800
 
-            <p>Daily Saving : ₹{analytics.daily_saving}</p>
+            ">
 
-            <p>Panel Efficiency : {analytics.panel_efficiency}%</p>
+                {title}
+
+            </h2>
+
+            {children}
 
         </div>
 
