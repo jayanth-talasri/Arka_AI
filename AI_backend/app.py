@@ -20,7 +20,7 @@ from routes.dashboard import router as dashboard_router
 from routes.history import router as history_router
 from routes.solar_score import router as score_router
 from routes.insights import router as insights_router
-from routes.carbon import router as carbon_router
+from routes.carbon_impact import router as carbon_router
 from routes.report import router as report_router
 from routes.recommendation import router as recommendation_router
 

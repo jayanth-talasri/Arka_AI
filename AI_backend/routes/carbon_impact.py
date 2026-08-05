@@ -7,7 +7,7 @@ from services.carbon_service import carbon_impact
 
 router = APIRouter()
 
-@router.get("/carbon")
+@router.get("",)
 def carbon(
         latitude: float,
         longitude: float,

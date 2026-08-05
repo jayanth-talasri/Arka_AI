@@ -64,3 +64,11 @@ class DashboardResponse(BaseModel):
     analytics: dict
     savings: dict
     appliances: dict
+
+class CarbonResponse(BaseModel):
+    carbon_impact: float
+    unit: str
+
+class SolarScoreResponse(BaseModel):
+    solar_score: float
+    unit: str

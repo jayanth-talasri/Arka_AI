@@ -8,7 +8,7 @@ from services.solar_score import solar_score
 router = APIRouter()
 
 
-@router.get("/score")
+@router.get("",)
 def score(
         latitude: float,
         longitude: float,
