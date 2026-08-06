@@ -18,7 +18,7 @@ from routes.savings import router as savings_router
 from routes.appliance import router as appliance_router
 from routes.dashboard import router as dashboard_router
 from routes.history import router as history_router
-from routes.solar_score import router as score_router
+from routes.solar_score import router as solar_router
 from routes.insights import router as insights_router
 from routes.carbon_impact import router as carbon_router
 from routes.report import router as report_router
@@ -88,7 +88,7 @@ app.include_router(
     tags=["History"]
 )
 app.include_router(
-    score_router,
+    solar_router,
     prefix="/solar-score",
     tags=["Solar Score"]
 )
