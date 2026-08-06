@@ -30,11 +30,11 @@ const AnalyticalPage = () => {
 
     useEffect(() => {
 
-        loadAnalytics();
+        getAnalytics();
 
     }, []);
 
-    const loadAnalytics = async () => {
+    const getAnalytics = async () => {
 
         const latitude = 17.385;
         const longitude = 78.487;
