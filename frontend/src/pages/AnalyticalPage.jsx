@@ -1,205 +1,310 @@
 import { useEffect, useState } from "react";
-
-import DashboardLayout from "../layouts/DashboardLayout";
-
 import {
-    getAnalytics,
-    getSolarScore,
-    getInsights
-} from "../services/analyticsService";
-
-import {
-    Sun,
+    BarChart3,
     Zap,
+    IndianRupee,
     Leaf,
-    Gauge
+    Gauge,
+    TrendingUp,
 } from "lucide-react";
 
-import KPICard from "../components/cards/KPICard";
+import DashboardLayout from "../layouts/DashboardLayout";
+import Loader from "../components/common/Loader";
+import ErrorMessage from "../components/common/ErrorMessage";
+
+import { getAnalytics as fetchAnalytics } from "../services/analyticsService";
+import { getSolarScore } from "../services/solarScoreService";
+import { getInsights } from "../services/insightsService";
+
 import AnalyticsCard from "../components/cards/AnalyticsCard";
+import KPICard from "../components/cards/KPICard";
 import EnergyChart from "../charts/EnergyChart";
 import SavingsChart from "../charts/SavingsChart";
+
 
 const AnalyticalPage = () => {
 
     const [analytics, setAnalytics] = useState(null);
+    const [solarScore, setSolarScore] = useState(null);
+    const [insights, setInsights] = useState(null);
 
-    const [score, setScore] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const [insights, setInsights] = useState([]);
+
+    const latitude = 17.385;
+    const longitude = 78.487;
+    const start = "20240101";
+    const end = "20240107";
+
 
     useEffect(() => {
 
-        getAnalytics();
+        const loadAnalytics = async () => {
+
+            try {
+
+                setLoading(true);
+                setError(null);
+
+                const [
+                    analyticsData,
+                    scoreData,
+                    insightsData
+                ] = await Promise.all([
+
+                    fetchAnalytics(
+                        latitude,
+                        longitude,
+                        start,
+                        end
+                    ),
+
+                    getSolarScore(
+                        latitude,
+                        longitude,
+                        start,
+                        end
+                    ),
+
+                    getInsights(
+                        latitude,
+                        longitude,
+                        start,
+                        end
+                    )
+
+                ]);
+
+                setAnalytics(analyticsData);
+                setSolarScore(scoreData);
+                setInsights(insightsData);
+
+            } catch (err) {
+
+                console.error(
+                    "Analytics loading error:",
+                    err
+                );
+
+                setError(
+                    err.response?.data?.detail ||
+                    "Failed to load analytics data."
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+        loadAnalytics();
 
     }, []);
 
-    const getAnalytics = async () => {
 
-        const latitude = 17.385;
-        const longitude = 78.487;
-        const start = "20240101";
-        const end = "20240107";
-
-        try {
-
-            const analyticsData = await getAnalytics(
-                latitude,
-                longitude,
-                start,
-                end
-            );
-
-            const scoreData = await getSolarScore(
-                latitude,
-                longitude,
-                start,
-                end
-            );
-
-            const insightData = await getInsights(
-                latitude,
-                longitude,
-                start,
-                end
-            );
-
-            setAnalytics(analyticsData);
-
-            setScore(scoreData);
-
-            setInsights(
-                insightData.insights || []
-            );
-
-        }
-
-        catch (error) {
-
-            console.log(error);
-
-        }
-
-    };
-
-    if (!analytics)
+    if (loading) {
 
         return (
 
-            <DashboardLayout><div className="text-2xl font-bold">Loading Analytics...</div></DashboardLayout>
+            <DashboardLayout>
+
+                <div className="flex justify-center items-center min-h-[60vh]">
+
+                    <Loader />
+
+                </div>
+
+            </DashboardLayout>
 
         );
+
+    }
+
+
+    if (error) {
+
+        return (
+
+            <DashboardLayout>
+
+                <div className="p-6">
+
+                    <ErrorMessage message={error} />
+
+                </div>
+
+            </DashboardLayout>
+
+        );
+
+    }
+
+
+    if (!analytics) {
+        return null;
+    }
+
+
+    const energyData = [
+
+        {
+            name: "Daily",
+            value: analytics.daily_energy || 0
+        },
+
+        {
+            name: "Monthly",
+            value: analytics.monthly_energy || 0
+        },
+
+        {
+            name: "Yearly",
+            value: analytics.yearly_energy || 0
+        }
+
+    ];
+
+
+    const savingsData = [
+
+        {
+            name: "Daily",
+            value: analytics.daily_saving || 0
+        },
+
+        {
+            name: "Monthly",
+            value: analytics.monthly_saving || 0
+        },
+
+        {
+            name: "Yearly",
+            value: analytics.yearly_saving || 0
+        }
+
+    ];
+
 
     return (
 
         <DashboardLayout>
 
-            <div className="p-8 bg-gray-100 min-h-screen">
+            <div className="p-6 space-y-8">
 
-                <h1 className="text-3xl font-bold mb-8">
 
-                    Analytics Dashboard
+                {/* HEADER */}
 
-                </h1>
+                <div>
 
-                {/* KPI Cards */}
+                    <p className="text-sm text-gray-500">
+                        ArkaAI Analytics
+                    </p>
+
+                    <h1 className="text-3xl font-bold text-gray-900">
+                        Energy Analytics
+                    </h1>
+
+                    <p className="text-gray-500 mt-2">
+                        Monitor your solar generation,
+                        savings and environmental impact.
+                    </p>
+
+                </div>
+
+
+                {/* KPI CARDS */}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-                    <KPICard
-                        title="Solar Score"
-                        value={`${score?.solar_score ?? 0}/100`}
-                    />
 
                     <KPICard
                         title="Daily Energy"
-                        value={`${analytics.daily_energy} kWh`}
+                        value={analytics.daily_energy?.toFixed(2)}
                         unit="kWh"
+                        icon={Zap}
+                        color="from-amber-500 to-orange-500"
                     />
 
+
                     <KPICard
-                        title="Panel Efficiency"
-                        value={`${analytics.panel_efficiency}%`}
+                        title="Monthly Energy"
+                        value={analytics.monthly_energy?.toFixed(2)}
+                        unit="kWh"
+                        icon={BarChart3}
+                        color="from-blue-500 to-cyan-500"
                     />
+
+
+                    <KPICard
+                        title="Monthly Savings"
+                        value={`₹${analytics.monthly_saving?.toFixed(2)}`}
+                        unit=""
+                        icon={IndianRupee}
+                        color="from-green-500 to-emerald-500"
+                    />
+
 
                     <KPICard
                         title="CO₂ Saved"
-                        value={`${analytics.co2_saved} kg`}
+                        value={analytics.co2_saved?.toFixed(2)}
+                        unit="kg"
+                        icon={Leaf}
+                        color="from-green-600 to-teal-500"
                     />
 
                 </div>
 
-                {/* Charts */}
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+                {/* SCORE */}
 
-                    <div className="bg-white rounded-2xl shadow p-6">
+                {solarScore && (
 
-                        <h2 className="text-xl font-semibold mb-4">
+                    <AnalyticsCard title="Solar Performance Score">
 
-                            Energy Production
-
-                        </h2>
-
-                        <EnergyChart analytics={analytics} />
-
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow p-6">
-
-                        <h2 className="text-xl font-semibold mb-4">
-
-                            Savings
-
-                        </h2>
-
-                        <SavingsChart analytics={analytics} />
-
-                    </div>
-
-                </div>
-
-                {/* Bottom Section */}
-
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
-
-                    <AnalyticsCard title="Savings Summary">
-
-                        <div className="space-y-3">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
 
                             <div>
 
-                                Monthly Saving :
+                                <p className="text-gray-500">
+                                    Overall solar performance
+                                </p>
 
-                                <strong>
+                                <div className="flex items-end gap-3 mt-2">
 
-                                    ₹{analytics.monthly_saving}
+                                    <span className="text-5xl font-bold">
+                                        {solarScore.solar_score}
+                                    </span>
 
-                                </strong>
+                                    <span className="text-gray-400 mb-2">
+                                        / 100
+                                    </span>
+
+                                </div>
 
                             </div>
 
-                            <div>
 
-                                Yearly Saving :
+                            <div className="text-center">
 
-                                <strong>
+                                <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center">
 
-                                    ₹{analytics.yearly_saving}
+                                    <Gauge
+                                        size={38}
+                                        className="text-amber-500"
+                                    />
 
-                                </strong>
+                                </div>
 
-                            </div>
+                                <p className="font-semibold mt-2">
+                                    Grade {solarScore.grade}
+                                </p>
 
-                            <div>
-
-                                Trees Equivalent :
-
-                                <strong>
-
-                                    {analytics.trees_equivalent}
-
-                                </strong>
+                                <p className="text-sm text-gray-500">
+                                    {solarScore.status}
+                                </p>
 
                             </div>
 
@@ -207,71 +312,109 @@ const AnalyticalPage = () => {
 
                     </AnalyticsCard>
 
-                    <AnalyticsCard>
+                )}
 
-                        <h2 className="text-xl font-semibold mb-4">
 
-                            AI Insights
+                {/* CHARTS */}
 
-                        </h2>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-                        <ul className="space-y-3">
 
-                            {insights.map((item, index) => (
+                    <AnalyticsCard title="Energy Generation">
 
-                                <li
-                                    key={index}
-                                    className="flex items-start gap-3"
-                                >
-
-                                    <span className="text-green-600">
-
-                                        ✔
-
-                                    </span>
-
-                                    <span>
-
-                                        {item}
-
-                                    </span>
-
-                                </li>
-
-                            ))}
-
-                        </ul>
+                        <EnergyChart
+                            data={energyData}
+                        />
 
                     </AnalyticsCard>
 
+
+                    <AnalyticsCard title="Savings Overview">
+
+                        <SavingsChart
+                            data={savingsData}
+                        />
+
+                    </AnalyticsCard>
+
+
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
-                    <KPICard
-                        title="Solar Score"
-                        value={score?.solar_score ?? 0}
-                        unit="/100"
-                        icon={Sun}
-                        color="from-yellow-500 to-orange-500"
-                    />
+
+                {/* ENVIRONMENT */}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
 
                     <KPICard
-                        title="Daily Energy"
-                        value={analytics.daily_energy}
-                        unit="kWh"
-                        icon={Zap}
-                        color="from-blue-500 to-cyan-500"
+                        title="CO₂ Reduction"
+                        value={analytics.co2_saved?.toFixed(2)}
+                        unit="kg"
+                        icon={Leaf}
+                        color="from-green-500 to-emerald-500"
                     />
+
+
+                    <KPICard
+                        title="Trees Equivalent"
+                        value={analytics.trees_equivalent?.toFixed(2)}
+                        unit="trees"
+                        icon={Leaf}
+                        color="from-green-600 to-lime-500"
+                    />
+
 
                     <KPICard
                         title="Panel Efficiency"
-                        value={analytics.panel_efficiency}
+                        value={analytics.panel_efficiency?.toFixed(2)}
                         unit="%"
-                        icon={Leaf}
-                        color="from-green-500 to-lime-500"
+                        icon={TrendingUp}
+                        color="from-purple-500 to-indigo-500"
                     />
 
                 </div>
+
+
+                {/* INSIGHTS */}
+
+                {insights && (
+
+                    <AnalyticsCard title="AI Insights">
+
+                        <div className="space-y-3">
+
+                            {Array.isArray(insights) ? (
+
+                                insights.map((item, index) => (
+
+                                    <div
+                                        key={index}
+                                        className="p-4 rounded-xl bg-gray-50"
+                                    >
+                                        {typeof item === "string"
+                                            ? item
+                                            : item.message || item.insight || JSON.stringify(item)}
+                                    </div>
+
+                                ))
+
+                            ) : (
+
+                                <div className="p-4 rounded-xl bg-gray-50">
+
+                                    {insights.message ||
+                                        insights.insight ||
+                                        JSON.stringify(insights)}
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    </AnalyticsCard>
+
+                )}
 
             </div>
 
@@ -280,5 +423,6 @@ const AnalyticalPage = () => {
     );
 
 };
+
 
 export default AnalyticalPage;

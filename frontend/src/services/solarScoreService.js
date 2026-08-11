@@ -1,18 +1,19 @@
 import aiApi from "./aiApi";
 
-export const getHistory = async (
+export const getSolarScore = async (
     latitude,
     longitude,
     start,
     end
 ) => {
-    const response = await aiApi.get("/history", {
+
+    const response = await aiApi.get("/solar-score", {
         params: {
             latitude,
             longitude,
             start,
-            end,
-        },
+            end
+        }
     });
 
     return response.data;

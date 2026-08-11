@@ -1,50 +1,108 @@
 import {
-  LineChart,
-  Line,
- XAxis,
-  YAxis,
-  Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
 } from "recharts";
 
-const ForecastChart = ({ prediction }) => {
-  
-  const data = [
-    {
-      day: "Today",
-      radiation: prediction?.predicted_radiation || 0,
-    },
-  ];
+const ForecastChart = ({ data = [] }) => {
+
+  if (!data.length) {
+    return (
+      <div className="
+        h-full
+        flex
+        items-center
+        justify-center
+        text-slate-400
+      ">
+        No forecast data available.
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-xl shadow p-5">
+    <ResponsiveContainer width="100%" height="100%">
 
-      <h3 className="text-lg font-semibold mb-4">
-        Solar Forecast
-      </h3>
+      <AreaChart
+        data={data}
+        margin={{
+          top: 10,
+          right: 10,
+          left: -15,
+          bottom: 0,
+        }}
+      >
 
-      <ResponsiveContainer width="100%" height={300}>
+        <defs>
 
-        <LineChart data={data}>
+          <linearGradient
+            id="forecastAreaGradient"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
 
-          <XAxis dataKey="day" />
+            <stop
+              offset="0%"
+              stopColor="#f97316"
+              stopOpacity={0.35}
+            />
 
-          <YAxis />
+            <stop
+              offset="100%"
+              stopColor="#f97316"
+              stopOpacity={0.02}
+            />
 
-          <Tooltip />
+          </linearGradient>
 
-          <Line
-            type="monotone"
-            dataKey="radiation"
-            stroke="#f59e0b"
-            strokeWidth={3}
-          />
+        </defs>
 
-        </LineChart>
+        <CartesianGrid
+          strokeDasharray="4 4"
+          vertical={false}
+        />
 
-      </ResponsiveContainer>
+        <XAxis
+          dataKey="day"
+          tickLine={false}
+          axisLine={false}
+        />
 
-    </div>
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+        />
+
+        <Tooltip
+          contentStyle={{
+            borderRadius: "14px",
+            border: "none",
+            boxShadow:
+              "0 10px 30px rgba(0,0,0,0.10)",
+          }}
+          formatter={(value) => [
+            `${Number(value).toFixed(2)} kWh/m²/day`,
+            "Solar Output",
+          ]}
+        />
+
+        <Area
+          type="monotone"
+          dataKey="radiation"
+          stroke="#f97316"
+          strokeWidth={3}
+          fill="url(#forecastAreaGradient)"
+        />
+
+      </AreaChart>
+
+    </ResponsiveContainer>
   );
 };
 
