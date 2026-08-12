@@ -1,36 +1,74 @@
 const jwt = require("jsonwebtoken");
 
-const verifyToken = (req, res, next) => {
 
-    const authHeader = req.headers.authorization;
+// ==========================================
+// AUTHENTICATION MIDDLEWARE
+// ==========================================
 
-    if (!authHeader) {
-        return res.status(401).json({
-            message: "Access Denied. No Token Provided."
-        });
-    }
-
-    const token = authHeader.split(" ")[1];
+const authenticate = (req, res, next) => {
 
     try {
 
+        const authHeader = req.headers.authorization;
+
+
+        // No Authorization header
+        if (!authHeader) {
+
+            return res.status(401).json({
+                success: false,
+                message: "Authorization token required"
+            });
+
+        }
+
+
+        // Expected:
+        // Authorization: Bearer TOKEN
+
+        const parts = authHeader.split(" ");
+
+
+        if (parts.length !== 2 || parts[0] !== "Bearer") {
+
+            return res.status(401).json({
+                success: false,
+                message: "Invalid authorization format"
+            });
+
+        }
+
+
+        const token = parts[1];
+
+
+        // Verify JWT
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET
         );
 
+
+        // Attach user information
         req.user = decoded;
+
 
         next();
 
-    } catch (err) {
+    } catch (error) {
+
+        console.error("Authentication error:", error.message);
 
         return res.status(401).json({
-            message: "Invalid Token"
+            success: false,
+            message: "Invalid or expired token"
         });
 
     }
 
 };
 
-module.exports = verifyToken;
+
+module.exports = {
+    authenticate
+};

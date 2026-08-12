@@ -2,12 +2,12 @@ const express = require("express");
 
 const router = express.Router();
 
-const verifyToken = require("../middleware/authMiddleware");
-
 const {
-  getAnalytics
+    getAnalytics
 } = require("../controllers/analyticsController");
 
-router.get("/", verifyToken, getAnalytics);
+
+router.get("/",  getAnalytics);
+
 
 module.exports = router;

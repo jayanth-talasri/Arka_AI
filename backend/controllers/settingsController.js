@@ -1,100 +1,91 @@
 const pool = require("../config/db");
 
-// Get settings
 const getSettings = async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT location,
-              solar_capacity,
-              electricity_rate,
-              appliance_info
-       FROM user_settings
-       WHERE user_id=$1`,
-      [req.user.id]
-    );
+    try {
+        const userId = req.user.id;
 
-    if (result.rows.length === 0) {
-      return res.json({
-        message: "No settings found",
-        settings: null
-      });
+        const result = await pool.query(
+            `
+            SELECT *
+            FROM user_settings
+            WHERE user_id = $1
+            `,
+            [userId]
+        );
+
+        res.json({
+            success: true,
+            settings: result.rows[0] || null
+        });
+
+    } catch (error) {
+        console.error("Get settings error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch settings"
+        });
     }
-
-    res.json(result.rows[0]);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Server Error"
-    });
-  }
 };
 
-// Save or update settings
-const saveSettings = async (req, res) => {
-  try {
 
-    const {
-      location,
-      solar_capacity,
-      electricity_rate,
-      appliance_info
-    } = req.body;
+const updateSettings = async (req, res) => {
+    try {
+        const userId = req.user.id;
 
-    const existing = await pool.query(
-      "SELECT * FROM user_settings WHERE user_id=$1",
-      [req.user.id]
-    );
+        const {
+            latitude,
+            longitude,
+            panel_capacity,
+            electricity_rate
+        } = req.body;
 
-    if (existing.rows.length === 0) {
+        const result = await pool.query(
+            `
+            INSERT INTO user_settings
+            (
+                user_id,
+                latitude,
+                longitude,
+                panel_capacity,
+                electricity_rate
+            )
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (user_id)
+            DO UPDATE SET
+                latitude = EXCLUDED.latitude,
+                longitude = EXCLUDED.longitude,
+                panel_capacity = EXCLUDED.panel_capacity,
+                electricity_rate = EXCLUDED.electricity_rate
+            RETURNING *
+            `,
+            [
+                userId,
+                latitude,
+                longitude,
+                panel_capacity,
+                electricity_rate
+            ]
+        );
 
-      await pool.query(
-        `INSERT INTO user_settings
-        (user_id,location,solar_capacity,electricity_rate,appliance_info)
-        VALUES($1,$2,$3,$4,$5)`,
-        [
-          req.user.id,
-          location,
-          solar_capacity,
-          electricity_rate,
-          appliance_info
-        ]
-      );
+        res.json({
+            success: true,
+            message: "Settings updated successfully",
+            settings: result.rows[0]
+        });
 
-    } else {
+    } catch (error) {
+        console.error("Update settings error:", error);
 
-      await pool.query(
-        `UPDATE user_settings
-        SET location=$1,
-            solar_capacity=$2,
-            electricity_rate=$3,
-            appliance_info=$4,
-            updated_at=CURRENT_TIMESTAMP
-        WHERE user_id=$5`,
-        [
-          location,
-          solar_capacity,
-          electricity_rate,
-          appliance_info,
-          req.user.id
-        ]
-      );
-
+        res.status(500).json({
+            success: false,
+            message: "Failed to update settings"
+        });
     }
-
-    res.json({
-      message: "Settings saved successfully"
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Server Error"
-    });
-  }
 };
+
 
 module.exports = {
-  getSettings,
-  saveSettings
+    getSettings,
+    updateSettings
 };

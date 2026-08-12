@@ -3,11 +3,11 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getForecast
-} = require("../controllers/forecastController");
+    getHistory
+} = require("../services/historyService");
 
 
-router.get("/", getForecast);
+router.get("/", getHistory);
 
 
 module.exports = router;

@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const { authenticate } = require("./middleware/authMiddleware");
+
 const pool = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
@@ -10,19 +12,21 @@ const settingsRoutes = require("./routes/settingsRoutes");
 const forecastRoutes = require("./routes/forecastRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
+const historyRoutes = require("./routes/historyRoutes");
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/history", authenticate, historyRoutes);
 
-app.use("/api/user", userRoutes);
+app.use("/api/user", authenticate, userRoutes);
 
-app.use("/api/settings", settingsRoutes);
+app.use("/api/settings", authenticate, settingsRoutes);
 
-app.use("/api/forecast", forecastRoutes);
+app.use("/api/forecast",  forecastRoutes);
 
-app.use("/api/recommendations", recommendationRoutes);
+app.use("/api/recommendations",  recommendationRoutes);
 
 app.use("/api/analytics", analyticsRoutes);
 
