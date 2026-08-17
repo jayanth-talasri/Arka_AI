@@ -1,11 +1,15 @@
 const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
+    database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    port: Number(process.env.DB_PORT),
+
+    // Explicitly use public schema
+    options: "-c search_path=public"
 });
 
 pool.on("connect", () => {
@@ -13,7 +17,7 @@ pool.on("connect", () => {
 });
 
 pool.on("error", (err) => {
-    console.error("❌ PostgreSQL error:", err);
+    console.error("❌ PostgreSQL pool error:", err);
 });
 
 module.exports = pool;

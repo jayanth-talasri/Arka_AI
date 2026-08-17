@@ -51,8 +51,7 @@ const authenticate = (req, res, next) => {
 
         // Attach user information
         req.user = decoded;
-
-
+        
         next();
 
     } catch (error) {

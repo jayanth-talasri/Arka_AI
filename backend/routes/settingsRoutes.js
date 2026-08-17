@@ -12,5 +12,4 @@ router.get("/", getSettings);
 
 router.put("/", updateSettings);
 
-
 module.exports = router;

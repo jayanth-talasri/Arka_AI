@@ -2,7 +2,7 @@ const pool = require("../config/db");
 
 
 // ==========================================
-// GET USER PROFILE
+// GET CURRENT USER PROFILE
 // ==========================================
 
 const getUserProfile = async (req, res) => {
@@ -18,7 +18,7 @@ const getUserProfile = async (req, res) => {
                 name,
                 email,
                 created_at
-            FROM users
+            FROM public.users
             WHERE id = $1
             `,
             [userId]
@@ -27,12 +27,13 @@ const getUserProfile = async (req, res) => {
         if (result.rows.length === 0) {
 
             return res.status(404).json({
+                success: false,
                 message: "User not found"
             });
 
         }
 
-        res.json({
+        return res.json({
             success: true,
             user: result.rows[0]
         });
@@ -41,16 +42,18 @@ const getUserProfile = async (req, res) => {
 
         console.error("Get user error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
+            success: false,
             message: "Failed to fetch user"
         });
 
     }
+
 };
 
 
 // ==========================================
-// UPDATE USER PROFILE
+// UPDATE CURRENT USER
 // ==========================================
 
 const updateUserProfile = async (req, res) => {
@@ -61,9 +64,10 @@ const updateUserProfile = async (req, res) => {
 
         const { name } = req.body;
 
-        if (!name) {
+        if (!name || !name.trim()) {
 
             return res.status(400).json({
+                success: false,
                 message: "Name is required"
             });
 
@@ -71,23 +75,28 @@ const updateUserProfile = async (req, res) => {
 
         const result = await pool.query(
             `
-            UPDATE users
+            UPDATE public.users
             SET name = $1
             WHERE id = $2
-            RETURNING id, name, email, created_at
+            RETURNING
+                id,
+                name,
+                email,
+                created_at
             `,
-            [name, userId]
+            [name.trim(), userId]
         );
 
         if (result.rows.length === 0) {
 
             return res.status(404).json({
+                success: false,
                 message: "User not found"
             });
 
         }
 
-        res.json({
+        return res.json({
             success: true,
             message: "Profile updated successfully",
             user: result.rows[0]
@@ -97,15 +106,58 @@ const updateUserProfile = async (req, res) => {
 
         console.error("Update user error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
+            success: false,
             message: "Failed to update profile"
         });
 
     }
+
+};
+
+
+// ==========================================
+// GET ALL USERS
+// ==========================================
+
+const getAllUsers = async (req, res) => {
+
+    try {
+
+        const result = await pool.query(
+            `
+            SELECT
+                id,
+                name,
+                email,
+                created_at
+            FROM public.users
+            ORDER BY id ASC
+            `
+        );
+
+        return res.json({
+            success: true,
+            count: result.rows.length,
+            users: result.rows
+        });
+
+    } catch (error) {
+
+        console.error("Get all users error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch users"
+        });
+
+    }
+
 };
 
 
 module.exports = {
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    getAllUsers
 };

@@ -1,35 +1,44 @@
-require("dotenv").config();
+const pool = require("./config/db");
 
-const pool = require("./db");
-
-async function testDatabase() {
-
+app.get("/test-db", async (req, res) => {
     try {
-
-        const result = await pool.query(`
-            SELECT 
+        const dbInfo = await pool.query(`
+            SELECT
                 current_database() AS database,
-                current_user AS user,
-                NOW() AS time
+                current_schema() AS schema,
+                current_user AS user
         `);
 
-        console.log("=================================");
-        console.log("✅ PostgreSQL connection successful");
-        console.log("Database:", result.rows[0].database);
-        console.log("User:", result.rows[0].user);
-        console.log("Time:", result.rows[0].time);
-        console.log("=================================");
+        const tables = await pool.query(`
+            SELECT table_schema, table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+            ORDER BY table_name
+        `);
+
+        const users = await pool.query(`
+            SELECT id, name, email, created_at
+            FROM public.users
+            ORDER BY id ASC
+        `);
+
+        res.json({
+            status: "Database connection successful",
+
+            database: dbInfo.rows[0],
+
+            tables: tables.rows,
+
+            users: users.rows
+        });
 
     } catch (error) {
 
-        console.error("❌ PostgreSQL connection failed");
-        console.error(error.message);
+        console.error("DATABASE TEST ERROR:", error);
 
-    } finally {
-
-        await pool.end();
-
+        res.status(500).json({
+            status: "Database connection failed",
+            error: error.message
+        });
     }
-}
-
-testDatabase();
+});

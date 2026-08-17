@@ -4,16 +4,40 @@ const router = express.Router();
 
 const {
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    getAllUsers
 } = require("../controllers/userController");
 
 
-// GET USER PROFILE
-router.get("/profile", getUserProfile);
+// ==========================================
+// GET CURRENT USER
+// ==========================================
+
+router.get(
+    "/profile",
+    getUserProfile
+);
 
 
-// UPDATE USER PROFILE
-router.put("/profile", updateUserProfile);
+// ==========================================
+// UPDATE CURRENT USER
+// ==========================================
+
+router.put(
+    "/profile",
+    updateUserProfile
+);
+
+
+// ==========================================
+// GET ALL USERS
+// ==========================================
+// Development/admin verification only
+
+router.get(
+    "/",
+    getAllUsers
+);
 
 
 module.exports = router;
