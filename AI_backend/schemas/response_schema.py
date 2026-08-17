@@ -71,6 +71,6 @@ class CarbonResponse(BaseModel):
 
 class SolarScoreResponse(BaseModel):
     solar_score: float
-    unit: str
-    status: dict
+    grade: str
+    status: str
 
