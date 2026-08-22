@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from services.history_service import get_history
-
+from dependencies.auth import verify_ai_api_key
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("", dependencies=[Depends(verify_ai_api_key)])
 def history(
     latitude: float,
     longitude: float,

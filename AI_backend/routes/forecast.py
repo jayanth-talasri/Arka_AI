@@ -1,7 +1,8 @@
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from dependencies.auth import verify_ai_api_key
 
 from services.forecast_service import seven_day_forecast
 
@@ -10,7 +11,7 @@ class ForecastResponse(BaseModel):
 
 router = APIRouter()
 
-@router.get("", response_model=ForecastResponse)
+@router.get("", dependencies=[Depends(verify_ai_api_key)], response_model=ForecastResponse)
 def forecast(
         latitude: float,
         longitude: float,
