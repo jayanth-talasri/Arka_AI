@@ -9,5 +9,4 @@ const {
 
 router.get("/",  getAnalytics);
 
-
 module.exports = router;

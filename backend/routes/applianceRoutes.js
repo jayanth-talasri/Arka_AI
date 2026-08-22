@@ -3,9 +3,9 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getForecast
-} = require("../controllers/forecastController");
+    getAppliances
+} = require("../controllers/applianceController");
 
-router.get("/", getForecast);
+router.get("/", getAppliances);
 
 module.exports = router;

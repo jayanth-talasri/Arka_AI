@@ -14,6 +14,7 @@ const forecastRoutes = require("./routes/forecastRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const applianceRoutes = require("./routes/applianceRoutes");
 
 const app = express();
 
@@ -29,7 +30,10 @@ app.use(
     })
 );
 
+// IMPORTANT
 app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
 
 
 // ==========================================
@@ -43,43 +47,19 @@ app.use("/api/auth", authRoutes);
 // PROTECTED ROUTES
 // ==========================================
 
-app.use(
-    "/api/user",
-    authenticate,
-    userRoutes
-);
+app.use("/api/user", authenticate, userRoutes);
 
-app.use(
-    "/api/settings",
-    authenticate,
-    settingsRoutes
-);
+app.use("/api/settings", authenticate, settingsRoutes);
 
-app.use(
-    "/api/forecast",
-    authenticate,
-    forecastRoutes
-);
+app.use("/api/forecast", authenticate, forecastRoutes);
 
-app.use(
-    "/api/recommendations",
-    authenticate,
-    recommendationRoutes
-);
+app.use("/api/recommendations", authenticate, recommendationRoutes);
 
-app.use(
-    "/api/analytics",
-    authenticate,
-    analyticsRoutes
-);
+app.use("/api/analytics", authenticate, analyticsRoutes);
 
-app.use(
-    "/api/history",
-    authenticate,
-    historyRoutes
-);
+app.use("/api/history", authenticate, historyRoutes);
 
-
+app.use("/api/appliances", authenticate, applianceRoutes);
 // ==========================================
 // HEALTH CHECK
 // ==========================================
@@ -132,7 +112,7 @@ app.get("/test-db", async (req, res) => {
 
 
 // ==========================================
-// 404 HANDLER
+// 404
 // ==========================================
 
 app.use((req, res) => {

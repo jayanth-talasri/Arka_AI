@@ -7,17 +7,15 @@ const pool = new Pool({
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
     port: Number(process.env.DB_PORT),
-
-    // Explicitly use public schema
-    options: "-c search_path=public"
+    options: "-c search_path=public",
 });
 
 pool.on("connect", () => {
     console.log("✅ PostgreSQL connected");
 });
 
-pool.on("error", (err) => {
-    console.error("❌ PostgreSQL pool error:", err);
+pool.on("error", (error) => {
+    console.error("❌ PostgreSQL pool error:", error);
 });
 
 module.exports = pool;
