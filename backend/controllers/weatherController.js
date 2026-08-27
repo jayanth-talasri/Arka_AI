@@ -1,8 +1,7 @@
 const axios = require("axios");
 const pool = require("../config/db");
 
-const getForecast = async (req, res) => {
-
+const getWeather = async (req, res) => {
     try {
 
         const userId = req.user.id;
@@ -12,13 +11,15 @@ const getForecast = async (req, res) => {
             end
         } = req.query;
 
-        if (!start || !end) {
+        // ==========================================
+        // VALIDATE DATES
+        // ==========================================
 
+        if (!start || !end) {
             return res.status(400).json({
                 success: false,
                 message: "start and end are required"
             });
-
         }
 
         // ==========================================
@@ -29,9 +30,7 @@ const getForecast = async (req, res) => {
             `
             SELECT
                 latitude,
-                longitude,
-                solar_capacity,
-                electricity_rate
+                longitude
             FROM public.user_settings
             WHERE user_id = $1
             `,
@@ -39,12 +38,10 @@ const getForecast = async (req, res) => {
         );
 
         if (settingsResult.rows.length === 0) {
-
             return res.status(404).json({
                 success: false,
-                message: "User settings not found. Please configure settings first."
+                message: "User settings not found"
             });
-
         }
 
         const settings = settingsResult.rows[0];
@@ -52,20 +49,19 @@ const getForecast = async (req, res) => {
         const latitude = Number(settings.latitude);
         const longitude = Number(settings.longitude);
 
-        console.log("========== FORECAST ==========");
-        console.log("User:", userId);
-        console.log("Location:", latitude, longitude);
-        console.log("Start:", start);
-        console.log("End:", end);
-        console.log("================================");
+        // ==========================================
+        // AI BACKEND CONFIG
+        // ==========================================
+
+        const aiBackendUrl = process.env.AI_BACKEND_URL;
+        const aiApiKey = process.env.AI_API_KEY;
+
         // ==========================================
         // CALL AI BACKEND
         // ==========================================
 
-        const aiBackendUrl = process.env.AI_BACKEND_URL;
-        console.log("AI KEY CONFIGURED:", !!process.env.AI_API_KEY);
         const response = await axios.get(
-            `${aiBackendUrl}/forecast`,
+            `${aiBackendUrl}/weather`,
             {
                 params: {
                     latitude,
@@ -75,15 +71,16 @@ const getForecast = async (req, res) => {
                 },
 
                 headers: {
-                    "X-AI-API-Key": process.env.AI_API_KEY
+                    "X-AI-API-Key": aiApiKey
                 },
+
                 timeout: 120000
             }
         );
 
-        const prediction = response.data;
-
-        console.log("AI Forecast response received");
+        // ==========================================
+        // RESPONSE
+        // ==========================================
 
         return res.status(200).json({
             success: true,
@@ -92,37 +89,45 @@ const getForecast = async (req, res) => {
 
             settings: {
                 latitude,
-                longitude,
-                solar_capacity: settings.solar_capacity,
-                electricity_rate: settings.electricity_rate
+                longitude
             },
 
-            forecast: prediction
+            weather: response.data
         });
 
     } catch (error) {
 
-        console.error("========== FORECAST ERROR ==========");
+        console.error(
+            "========== WEATHER ERROR =========="
+        );
 
         if (error.response) {
 
-            return res.status(error.response.status).json({
+            console.error(
+                error.response.data
+            );
+
+            return res.status(
+                error.response.status
+            ).json({
                 success: false,
-                message: "AI backend forecast request failed",
+                message:
+                    "AI backend weather request failed",
                 error: error.response.data
             });
-
         }
+
+        console.error(error.message);
 
         return res.status(500).json({
             success: false,
-            message: "Failed to generate forecast",
+            message:
+                "Failed to fetch weather",
             error: error.message
         });
     }
 };
 
-
 module.exports = {
-    getForecast
+    getWeather
 };

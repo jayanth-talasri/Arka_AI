@@ -5,7 +5,7 @@ const {
 } = require("../services/userSettingsService");
 
 
-const getAnalytics = async (req, res) => {
+const getSavings = async (req, res) => {
 
     try {
 
@@ -28,7 +28,7 @@ const getAnalytics = async (req, res) => {
 
 
         // ==========================================
-        // GET USER SETTINGS
+        // USER SETTINGS
         // ==========================================
 
         const settings =
@@ -68,7 +68,7 @@ const getAnalytics = async (req, res) => {
 
 
         console.log(
-            "========== ANALYTICS =========="
+            "========== SAVINGS =========="
         );
 
         console.log("User:", userId);
@@ -78,13 +78,15 @@ const getAnalytics = async (req, res) => {
 
 
         const response = await axios.get(
-            `${aiBackendUrl}/analytics`,
+            `${aiBackendUrl}/savings`,
             {
                 params: {
                     latitude,
                     longitude,
                     start,
-                    end
+                    end,
+                    solar_capacity: solarCapacity,
+                    electricity_rate: electricityRate
                 },
 
                 headers: {
@@ -98,7 +100,7 @@ const getAnalytics = async (req, res) => {
 
 
         console.log(
-            "AI Analytics response received"
+            "AI Savings response received"
         );
 
 
@@ -116,7 +118,7 @@ const getAnalytics = async (req, res) => {
                 electricity_rate: electricityRate
             },
 
-            analytics: response.data
+            savings: response.data
 
         });
 
@@ -124,7 +126,7 @@ const getAnalytics = async (req, res) => {
     } catch (error) {
 
         console.error(
-            "========== ANALYTICS ERROR =========="
+            "========== SAVINGS ERROR =========="
         );
 
 
@@ -137,7 +139,7 @@ const getAnalytics = async (req, res) => {
                     success: false,
 
                     message:
-                        "AI backend analytics request failed",
+                        "AI backend savings request failed",
 
                     error:
                         error.response.data
@@ -152,7 +154,7 @@ const getAnalytics = async (req, res) => {
             success: false,
 
             message:
-                "Failed to fetch analytics",
+                "Failed to fetch savings",
 
             error:
                 error.message
@@ -165,5 +167,5 @@ const getAnalytics = async (req, res) => {
 
 
 module.exports = {
-    getAnalytics
+    getSavings
 };

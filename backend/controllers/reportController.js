@@ -5,7 +5,7 @@ const {
 } = require("../services/userSettingsService");
 
 
-const getAnalytics = async (req, res) => {
+const getReport = async (req, res) => {
 
     try {
 
@@ -27,10 +27,6 @@ const getAnalytics = async (req, res) => {
         }
 
 
-        // ==========================================
-        // GET USER SETTINGS
-        // ==========================================
-
         const settings =
             await getUserSettings(userId);
 
@@ -40,7 +36,7 @@ const getAnalytics = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message:
-                    "User settings not found. Please configure settings first."
+                    "User settings not found."
             });
 
         }
@@ -59,32 +55,25 @@ const getAnalytics = async (req, res) => {
             Number(settings.electricity_rate);
 
 
-        // ==========================================
-        // AI BACKEND
-        // ==========================================
-
         const aiBackendUrl =
             process.env.AI_BACKEND_URL;
 
 
         console.log(
-            "========== ANALYTICS =========="
+            "========== REPORT =========="
         );
-
-        console.log("User:", userId);
-        console.log("Location:", latitude, longitude);
-        console.log("Start:", start);
-        console.log("End:", end);
 
 
         const response = await axios.get(
-            `${aiBackendUrl}/analytics`,
+            `${aiBackendUrl}/report`,
             {
                 params: {
                     latitude,
                     longitude,
                     start,
-                    end
+                    end,
+                    solar_capacity: solarCapacity,
+                    electricity_rate: electricityRate
                 },
 
                 headers: {
@@ -97,26 +86,13 @@ const getAnalytics = async (req, res) => {
         );
 
 
-        console.log(
-            "AI Analytics response received"
-        );
-
-
         return res.status(200).json({
 
             success: true,
 
             user_id: userId,
 
-            settings: {
-                location: settings.location,
-                latitude,
-                longitude,
-                solar_capacity: solarCapacity,
-                electricity_rate: electricityRate
-            },
-
-            analytics: response.data
+            report: response.data
 
         });
 
@@ -124,7 +100,7 @@ const getAnalytics = async (req, res) => {
     } catch (error) {
 
         console.error(
-            "========== ANALYTICS ERROR =========="
+            "========== REPORT ERROR =========="
         );
 
 
@@ -137,7 +113,7 @@ const getAnalytics = async (req, res) => {
                     success: false,
 
                     message:
-                        "AI backend analytics request failed",
+                        "AI backend report request failed",
 
                     error:
                         error.response.data
@@ -152,7 +128,7 @@ const getAnalytics = async (req, res) => {
             success: false,
 
             message:
-                "Failed to fetch analytics",
+                "Failed to generate report",
 
             error:
                 error.message
@@ -165,5 +141,5 @@ const getAnalytics = async (req, res) => {
 
 
 module.exports = {
-    getAnalytics
+    getReport
 };

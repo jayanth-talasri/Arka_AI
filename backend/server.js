@@ -9,12 +9,20 @@ const { authenticate } = require("./middleware/authMiddleware");
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 const forecastRoutes = require("./routes/forecastRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 const applianceRoutes = require("./routes/applianceRoutes");
+const savingsRoutes = require("./routes/savingsRoutes");
+const weatherRoutes = require("./routes/weatherRoutes");
+const carbonRoutes = require("./routes/carbonRoutes");
+const insightsRoutes = require("./routes/InsightsRoutes");
+const solarScoreRoutes = require("./routes/solarScoreRoutes");
+const predictionRoutes = require("./routes/predictionRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 
@@ -46,6 +54,7 @@ app.use("/api/auth", authRoutes);
 // ==========================================
 // PROTECTED ROUTES
 // ==========================================
+app.use("/api/dashboard", authenticate, dashboardRoutes);
 
 app.use("/api/user", authenticate, userRoutes);
 
@@ -60,6 +69,21 @@ app.use("/api/analytics", authenticate, analyticsRoutes);
 app.use("/api/history", authenticate, historyRoutes);
 
 app.use("/api/appliances", authenticate, applianceRoutes);
+
+app.use("/api/savings", authenticate, savingsRoutes);
+
+app.use("/api/weather", authenticate, weatherRoutes);
+
+app.use("/api/carbon", authenticate, carbonRoutes);
+
+app.use("/api/insights", authenticate, insightsRoutes);
+
+app.use("/api/solar-score", authenticate, solarScoreRoutes);
+
+app.use("/api/predictions", authenticate, predictionRoutes);
+
+app.use("/api/reports", authenticate, reportRoutes);
+
 // ==========================================
 // HEALTH CHECK
 // ==========================================

@@ -1,28 +1,32 @@
 const axios = require("axios");
 const pool = require("../config/db");
 
-const getForecast = async (req, res) => {
-
+const getDashboard = async (req, res) => {
     try {
+
+        // ==========================================
+        // 1. GET USER FROM JWT
+        // ==========================================
 
         const userId = req.user.id;
 
-        const {
-            start,
-            end
-        } = req.query;
+        const { start, end } = req.query;
 
         if (!start || !end) {
-
             return res.status(400).json({
                 success: false,
                 message: "start and end are required"
             });
-
         }
 
+        console.log("========== DASHBOARD ==========");
+        console.log("User:", userId);
+        console.log("Start:", start);
+        console.log("End:", end);
+
+
         // ==========================================
-        // GET USER SETTINGS
+        // 2. GET USER SETTINGS
         // ==========================================
 
         const settingsResult = await pool.query(
@@ -52,20 +56,38 @@ const getForecast = async (req, res) => {
         const latitude = Number(settings.latitude);
         const longitude = Number(settings.longitude);
 
-        console.log("========== FORECAST ==========");
-        console.log("User:", userId);
-        console.log("Location:", latitude, longitude);
-        console.log("Start:", start);
-        console.log("End:", end);
-        console.log("================================");
+
         // ==========================================
-        // CALL AI BACKEND
+        // 3. CALL FASTAPI
         // ==========================================
 
         const aiBackendUrl = process.env.AI_BACKEND_URL;
-        console.log("AI KEY CONFIGURED:", !!process.env.AI_API_KEY);
+
+        if (!aiBackendUrl) {
+
+            return res.status(500).json({
+                success: false,
+                message: "AI backend URL is not configured"
+            });
+
+        }
+
+        if (!process.env.AI_API_KEY) {
+
+            return res.status(500).json({
+                success: false,
+                message: "AI API key is not configured"
+            });
+
+        }
+
+
+        console.log("AI Backend:", `${aiBackendUrl}/dashboard`);
+        console.log("AI Key configured:", !!process.env.AI_API_KEY);
+
+
         const response = await axios.get(
-            `${aiBackendUrl}/forecast`,
+            `${aiBackendUrl}/dashboard`,
             {
                 params: {
                     latitude,
@@ -77,15 +99,20 @@ const getForecast = async (req, res) => {
                 headers: {
                     "X-AI-API-Key": process.env.AI_API_KEY
                 },
+
                 timeout: 120000
             }
         );
 
-        const prediction = response.data;
 
-        console.log("AI Forecast response received");
+        // ==========================================
+        // 4. RETURN AI RESULT TO FRONTEND
+        // ==========================================
+
+        console.log("AI Dashboard response received");
 
         return res.status(200).json({
+
             success: true,
 
             user_id: userId,
@@ -97,32 +124,56 @@ const getForecast = async (req, res) => {
                 electricity_rate: settings.electricity_rate
             },
 
-            forecast: prediction
+            dashboard: response.data
+
         });
+
 
     } catch (error) {
 
-        console.error("========== FORECAST ERROR ==========");
+        console.error("========== DASHBOARD ERROR ==========");
 
         if (error.response) {
 
+            console.error(
+                "AI Backend status:",
+                error.response.status
+            );
+
+            console.error(
+                "AI Backend response:",
+                error.response.data
+            );
+
             return res.status(error.response.status).json({
+
                 success: false,
-                message: "AI backend forecast request failed",
+
+                message: "AI backend dashboard request failed",
+
                 error: error.response.data
+
             });
 
         }
 
+
+        console.error("Error:", error.message);
+
         return res.status(500).json({
+
             success: false,
-            message: "Failed to generate forecast",
+
+            message: "Failed to generate dashboard",
+
             error: error.message
+
         });
+
     }
 };
 
 
 module.exports = {
-    getForecast
+    getDashboard
 };

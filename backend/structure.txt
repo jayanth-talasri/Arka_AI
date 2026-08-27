@@ -1,5 +1,5 @@
 Folder PATH listing for volume New Volume
-Volume serial number is 0000005E 6CCF:33F6
+Volume serial number is 00000073 6CCF:33F6
 D:.
 |   .env
 |   package-lock.json
@@ -9,17 +9,23 @@ D:.
 |   
 +---config
 |       db.js
-|       testDb.js
 |       
 +---controllers
 |       analyticsController.js
+|       applianceController.js
 |       authController.js
+|       dashboardController.js
 |       forecastController.js
 |       recommendationController.js
 |       settingsController.js
 |       userController.js
 |       
++---dependencies
+|       auth.py
+|       _init__.py
+|       
 +---middleware
+|       aiAuth.js
 |       authMiddleware.js
 |       
 +---models
@@ -49,6 +55,23 @@ D:.
 |   |       package.json
 |   |       README.md
 |   |       
+|   +---agent-base
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   
+|   |   +---dist
+|   |   |   \---src
+|   |   |           index.d.ts
+|   |   |           index.js
+|   |   |           index.js.map
+|   |   |           promisify.d.ts
+|   |   |           promisify.js
+|   |   |           promisify.js.map
+|   |   |           
+|   |   \---src
+|   |           index.ts
+|   |           promisify.ts
+|   |           
 |   +---anymatch
 |   |       index.d.ts
 |   |       index.js
@@ -56,6 +79,155 @@ D:.
 |   |       package.json
 |   |       README.md
 |   |       
+|   +---asynckit
+|   |   |   bench.js
+|   |   |   index.js
+|   |   |   LICENSE
+|   |   |   package.json
+|   |   |   parallel.js
+|   |   |   README.md
+|   |   |   serial.js
+|   |   |   serialOrdered.js
+|   |   |   stream.js
+|   |   |   
+|   |   \---lib
+|   |           abort.js
+|   |           async.js
+|   |           defer.js
+|   |           iterate.js
+|   |           readable_asynckit.js
+|   |           readable_parallel.js
+|   |           readable_serial.js
+|   |           readable_serial_ordered.js
+|   |           state.js
+|   |           streamify.js
+|   |           terminator.js
+|   |           
+|   +---axios
+|   |   |   CHANGELOG.md
+|   |   |   index.d.cts
+|   |   |   index.d.ts
+|   |   |   index.js
+|   |   |   LICENSE
+|   |   |   MIGRATION_GUIDE.md
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   
+|   |   +---dist
+|   |   |   |   axios.js
+|   |   |   |   axios.min.js
+|   |   |   |   axios.min.js.map
+|   |   |   |   
+|   |   |   +---browser
+|   |   |   |       axios.cjs
+|   |   |   |       
+|   |   |   +---esm
+|   |   |   |       axios.js
+|   |   |   |       axios.min.js
+|   |   |   |       axios.min.js.map
+|   |   |   |       
+|   |   |   \---node
+|   |   |           axios.cjs
+|   |   |           
+|   |   \---lib
+|   |       |   axios.js
+|   |       |   utils.js
+|   |       |   
+|   |       +---adapters
+|   |       |       adapters.js
+|   |       |       fetch.js
+|   |       |       http.js
+|   |       |       README.md
+|   |       |       xhr.js
+|   |       |       
+|   |       +---cancel
+|   |       |       CanceledError.js
+|   |       |       CancelToken.js
+|   |       |       isCancel.js
+|   |       |       
+|   |       +---core
+|   |       |       Axios.js
+|   |       |       AxiosError.js
+|   |       |       AxiosHeaders.js
+|   |       |       buildFullPath.js
+|   |       |       dispatchRequest.js
+|   |       |       InterceptorManager.js
+|   |       |       mergeConfig.js
+|   |       |       README.md
+|   |       |       setFormDataHeaders.js
+|   |       |       settle.js
+|   |       |       transformData.js
+|   |       |       
+|   |       +---defaults
+|   |       |       index.js
+|   |       |       transitional.js
+|   |       |       
+|   |       +---env
+|   |       |   |   data.js
+|   |       |   |   README.md
+|   |       |   |   
+|   |       |   \---classes
+|   |       |           FormData.js
+|   |       |           
+|   |       +---helpers
+|   |       |       AxiosTransformStream.js
+|   |       |       AxiosURLSearchParams.js
+|   |       |       bind.js
+|   |       |       buildURL.js
+|   |       |       callbackify.js
+|   |       |       combineURLs.js
+|   |       |       composeSignals.js
+|   |       |       cookies.js
+|   |       |       deprecatedMethod.js
+|   |       |       estimateDataURLDecodedBytes.js
+|   |       |       formDataToJSON.js
+|   |       |       formDataToStream.js
+|   |       |       fromDataURI.js
+|   |       |       Http2Sessions.js
+|   |       |       HttpStatusCode.js
+|   |       |       isAbsoluteURL.js
+|   |       |       isAxiosError.js
+|   |       |       isURLSameOrigin.js
+|   |       |       null.js
+|   |       |       parseHeaders.js
+|   |       |       parseProtocol.js
+|   |       |       progressEventReducer.js
+|   |       |       readBlob.js
+|   |       |       README.md
+|   |       |       resolveConfig.js
+|   |       |       sanitizeHeaderValue.js
+|   |       |       shouldBypassProxy.js
+|   |       |       speedometer.js
+|   |       |       spread.js
+|   |       |       throttle.js
+|   |       |       toFormData.js
+|   |       |       toURLEncodedForm.js
+|   |       |       trackStream.js
+|   |       |       validator.js
+|   |       |       ZlibHeaderTransformStream.js
+|   |       |       
+|   |       \---platform
+|   |           |   index.js
+|   |           |   
+|   |           +---browser
+|   |           |   |   index.js
+|   |           |   |   
+|   |           |   \---classes
+|   |           |           Blob.js
+|   |           |           FormData.js
+|   |           |           URLSearchParams.js
+|   |           |           
+|   |           +---common
+|   |           |       utils.js
+|   |           |       
+|   |           \---node
+|   |               |   index.js
+|   |               |   
+|   |               \---classes
+|   |                       Buffer.js
+|   |                       FormData.js
+|   |                       URLSearchParams.js
+|   |                       
 |   +---balanced-match
 |   |   |   LICENSE.md
 |   |   |   package.json
@@ -237,6 +409,15 @@ D:.
 |   |   \---types
 |   |           index.d.ts
 |   |           
+|   +---combined-stream
+|   |   |   License
+|   |   |   package.json
+|   |   |   Readme.md
+|   |   |   yarn.lock
+|   |   |   
+|   |   \---lib
+|   |           combined_stream.js
+|   |           
 |   +---content-disposition
 |   |       index.js
 |   |       LICENSE
@@ -282,6 +463,16 @@ D:.
 |   |           common.js
 |   |           index.js
 |   |           node.js
+|   |           
+|   +---delayed-stream
+|   |   |   .npmignore
+|   |   |   License
+|   |   |   Makefile
+|   |   |   package.json
+|   |   |   Readme.md
+|   |   |   
+|   |   \---lib
+|   |           delayed_stream.js
 |   |           
 |   +---depd
 |   |   |   History.md
@@ -428,6 +619,20 @@ D:.
 |   |   \---test
 |   |           index.js
 |   |           
+|   +---es-set-tostringtag
+|   |   |   .eslintrc
+|   |   |   .nycrc
+|   |   |   CHANGELOG.md
+|   |   |   index.d.ts
+|   |   |   index.js
+|   |   |   LICENSE
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   tsconfig.json
+|   |   |   
+|   |   \---test
+|   |           index.js
+|   |           
 |   +---escape-html
 |   |       index.js
 |   |       LICENSE
@@ -468,6 +673,43 @@ D:.
 |   |       package.json
 |   |       README.md
 |   |       
+|   +---follow-redirects
+|   |       debug.js
+|   |       http.js
+|   |       https.js
+|   |       index.js
+|   |       LICENSE
+|   |       package.json
+|   |       README.md
+|   |       
+|   +---form-data
+|   |   |   CHANGELOG.md
+|   |   |   index.d.ts
+|   |   |   License
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   
+|   |   +---lib
+|   |   |       browser.js
+|   |   |       form_data.js
+|   |   |       populate.js
+|   |   |       
+|   |   \---node_modules
+|   |       +---mime-db
+|   |       |       db.json
+|   |       |       HISTORY.md
+|   |       |       index.js
+|   |       |       LICENSE
+|   |       |       package.json
+|   |       |       README.md
+|   |       |       
+|   |       \---mime-types
+|   |               HISTORY.md
+|   |               index.js
+|   |               LICENSE
+|   |               package.json
+|   |               README.md
+|   |               
 |   +---forwarded
 |   |       HISTORY.md
 |   |       index.js
@@ -591,6 +833,30 @@ D:.
 |   |               core-js.js
 |   |               get-own-property-symbols.js
 |   |               
+|   +---has-tostringtag
+|   |   |   .eslintrc
+|   |   |   .nycrc
+|   |   |   CHANGELOG.md
+|   |   |   index.d.ts
+|   |   |   index.js
+|   |   |   LICENSE
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   shams.d.ts
+|   |   |   shams.js
+|   |   |   tsconfig.json
+|   |   |   
+|   |   +---.github
+|   |   |       FUNDING.yml
+|   |   |       
+|   |   \---test
+|   |       |   index.js
+|   |       |   tests.js
+|   |       |   
+|   |       \---shams
+|   |               core-js.js
+|   |               get-own-property-symbols.js
+|   |               
 |   +---hasown
 |   |   |   .nycrc
 |   |   |   CHANGELOG.md
@@ -612,6 +878,21 @@ D:.
 |   |       package.json
 |   |       README.md
 |   |       
+|   +---https-proxy-agent
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   
+|   |   \---dist
+|   |           agent.d.ts
+|   |           agent.js
+|   |           agent.js.map
+|   |           index.d.ts
+|   |           index.js
+|   |           index.js.map
+|   |           parse-proxy-response.d.ts
+|   |           parse-proxy-response.js
+|   |           parse-proxy-response.js.map
+|   |           
 |   +---iconv-lite
 |   |   |   LICENSE
 |   |   |   package.json
@@ -1297,6 +1578,13 @@ D:.
 |   |       package.json
 |   |       README.md
 |   |       
+|   +---proxy-from-env
+|   |       index.cjs
+|   |       index.js
+|   |       LICENSE
+|   |       package.json
+|   |       README.md
+|   |       
 |   +---pstree.remy
 |   |   |   .travis.yml
 |   |   |   LICENSE
@@ -1686,7 +1974,9 @@ D:.
 |           
 +---routes
 |       analyticsRoutes.js
+|       applianceRoutes.js
 |       authRoutes.js
+|       dashboardRoutes.js
 |       forecastRoutes.js
 |       historyRoutes.js
 |       recommendationRoutes.js
@@ -1694,5 +1984,6 @@ D:.
 |       userRoutes.js
 |       
 \---services
+        aiService.js
         historyService.js
         

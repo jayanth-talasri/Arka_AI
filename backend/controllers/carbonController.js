@@ -5,7 +5,7 @@ const {
 } = require("../services/userSettingsService");
 
 
-const getAnalytics = async (req, res) => {
+const getCarbonImpact = async (req, res) => {
 
     try {
 
@@ -27,10 +27,6 @@ const getAnalytics = async (req, res) => {
         }
 
 
-        // ==========================================
-        // GET USER SETTINGS
-        // ==========================================
-
         const settings =
             await getUserSettings(userId);
 
@@ -40,7 +36,7 @@ const getAnalytics = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message:
-                    "User settings not found. Please configure settings first."
+                    "User settings not found."
             });
 
         }
@@ -55,36 +51,25 @@ const getAnalytics = async (req, res) => {
         const solarCapacity =
             Number(settings.solar_capacity);
 
-        const electricityRate =
-            Number(settings.electricity_rate);
-
-
-        // ==========================================
-        // AI BACKEND
-        // ==========================================
 
         const aiBackendUrl =
             process.env.AI_BACKEND_URL;
 
 
         console.log(
-            "========== ANALYTICS =========="
+            "========== CARBON IMPACT =========="
         );
-
-        console.log("User:", userId);
-        console.log("Location:", latitude, longitude);
-        console.log("Start:", start);
-        console.log("End:", end);
 
 
         const response = await axios.get(
-            `${aiBackendUrl}/analytics`,
+            `${aiBackendUrl}/carbon-impact`,
             {
                 params: {
                     latitude,
                     longitude,
                     start,
-                    end
+                    end,
+                    solar_capacity: solarCapacity
                 },
 
                 headers: {
@@ -98,7 +83,7 @@ const getAnalytics = async (req, res) => {
 
 
         console.log(
-            "AI Analytics response received"
+            "AI Carbon Impact response received"
         );
 
 
@@ -108,15 +93,7 @@ const getAnalytics = async (req, res) => {
 
             user_id: userId,
 
-            settings: {
-                location: settings.location,
-                latitude,
-                longitude,
-                solar_capacity: solarCapacity,
-                electricity_rate: electricityRate
-            },
-
-            analytics: response.data
+            carbon_impact: response.data
 
         });
 
@@ -124,7 +101,7 @@ const getAnalytics = async (req, res) => {
     } catch (error) {
 
         console.error(
-            "========== ANALYTICS ERROR =========="
+            "========== CARBON IMPACT ERROR =========="
         );
 
 
@@ -137,7 +114,7 @@ const getAnalytics = async (req, res) => {
                     success: false,
 
                     message:
-                        "AI backend analytics request failed",
+                        "AI backend carbon impact request failed",
 
                     error:
                         error.response.data
@@ -152,7 +129,7 @@ const getAnalytics = async (req, res) => {
             success: false,
 
             message:
-                "Failed to fetch analytics",
+                "Failed to fetch carbon impact",
 
             error:
                 error.message
@@ -165,5 +142,5 @@ const getAnalytics = async (req, res) => {
 
 
 module.exports = {
-    getAnalytics
+    getCarbonImpact
 };
