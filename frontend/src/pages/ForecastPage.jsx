@@ -44,19 +44,8 @@ const ForecastPage = () => {
         setError("");
 
         const [forecastData, savingsData] = await Promise.all([
-          getForecast(
-            location.latitude,
-            location.longitude,
-            START_DATE,
-            END_DATE
-          ),
-
-          getSavings(
-            location.latitude,
-            location.longitude,
-            START_DATE,
-            END_DATE
-          ),
+          getForecast(START_DATE, END_DATE),
+          getSavings(),
         ]);
 
         setForecast(forecastData);

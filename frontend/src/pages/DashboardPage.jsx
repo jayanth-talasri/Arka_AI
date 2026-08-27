@@ -14,17 +14,22 @@ import ErrorMessage from "../components/common/ErrorMessage";
 
 import { getDashboard } from "../services/dashboardService";
 
+
 const DashboardPage = () => {
 
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
   useEffect(() => {
 
     const loadDashboard = async () => {
 
       try {
+
+        setLoading(true);
+        setError("");
 
         const data = await getDashboard(
           17.385,
@@ -33,17 +38,18 @@ const DashboardPage = () => {
           "20240107"
         );
 
-        console.log(data);
+        console.log("DASHBOARD RESPONSE:", data);
 
         setDashboard(data);
 
-        toast.success("Dashboard Loaded Successfully");
-
       } catch (err) {
 
-        console.error(err);
+        console.error("Dashboard error:", err);
 
-        setError("Unable to load dashboard.");
+        setError(
+          err.response?.data?.message ||
+          "Unable to load dashboard."
+        );
 
       } finally {
 
@@ -53,9 +59,15 @@ const DashboardPage = () => {
 
     };
 
+
     loadDashboard();
 
   }, []);
+
+
+  // ==========================================
+  // LOADING
+  // ==========================================
 
   if (loading) {
 
@@ -63,17 +75,22 @@ const DashboardPage = () => {
 
       <DashboardLayout>
 
-        <h2 className="text-2xl font-bold">
+        <div className="flex justify-center items-center min-h-[60vh]">
 
-          Loading Dashboard...
+          <Loader />
 
-        </h2>
+        </div>
 
       </DashboardLayout>
 
     );
 
   }
+
+
+  // ==========================================
+  // ERROR
+  // ==========================================
 
   if (error) {
 
@@ -92,103 +109,270 @@ const DashboardPage = () => {
 
   }
 
+
+  // ==========================================
+  // SAFETY CHECK
+  // ==========================================
+
+  if (!dashboard) {
+
+    return (
+
+      <DashboardLayout>
+
+        <p className="text-gray-500">
+
+          No dashboard data available.
+
+        </p>
+
+      </DashboardLayout>
+
+    );
+
+  }
+
+
+  // ==========================================
+  // EXTRACT DATA
+  // ==========================================
+
+  const dashboardData = dashboard.dashboard || {};
+
+  const prediction =
+    dashboardData.prediction || {};
+
+  const analytics =
+    dashboardData.analytics || {};
+
+  const weather =
+    dashboardData.weather || {};
+
+  // Supports both possible response structures
+  const appliances =
+    dashboardData.appliances ||
+    dashboard.appliances ||
+    {};
+
+  const recommendedAppliances =
+    appliances.recommended || [];
+
+
+  // ==========================================
+  // UI
+  // ==========================================
+
   return (
 
     <DashboardLayout>
 
-      <h1 className="text-3xl font-bold mb-6">
+      {/* ======================================
+          HEADER
+      ====================================== */}
 
-        Welcome to ArkaAI ☀️
+      <div className="mb-8">
 
-      </h1>
+        <h1 className="text-3xl font-bold text-gray-900">
 
-      {/* KPI Cards */}
+          Welcome to ArkaAI ☀️
 
-      <div className="grid md:grid-cols-4 gap-5 mb-8">
+        </h1>
+
+        <p className="text-gray-500 mt-2">
+
+          Monitor your solar performance and energy insights.
+
+        </p>
+
+      </div>
+
+
+      {/* ======================================
+          KPI CARDS
+      ====================================== */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 
         <KPICard
           title="Solar Radiation"
-          value={`${dashboard.prediction.predicted_radiation} kWh/m²`}
+          value={
+            prediction.predicted_radiation !== undefined
+              ? `${prediction.predicted_radiation} kWh/m²`
+              : "N/A"
+          }
         />
+
 
         <KPICard
           title="Daily Energy"
-          value={`${dashboard.analytics.daily_energy} kWh`}
+          value={
+            analytics.daily_energy !== undefined
+              ? `${analytics.daily_energy} kWh`
+              : "N/A"
+          }
         />
+
 
         <KPICard
           title="Daily Savings"
-          value={`₹${dashboard.analytics.daily_saving}`}
+          value={
+            analytics.daily_saving !== undefined
+              ? `₹${analytics.daily_saving}`
+              : "N/A"
+          }
         />
+
 
         <KPICard
           title="Weather"
-          value={dashboard.weather.condition}
+          value={
+            weather.condition || "N/A"
+          }
         />
 
       </div>
 
-      {/* Forecast Chart */}
 
-      <ForecastChart
-        prediction={dashboard.prediction}
-      />
+      {/* ======================================
+          FORECAST
+      ====================================== */}
 
-      {/* Weather + Savings */}
+      <div className="mb-6">
 
-      <div className="grid md:grid-cols-2 gap-6 mt-6">
+        <ForecastChart
+          prediction={prediction}
+        />
+
+      </div>
+
+
+      {/* ======================================
+          WEATHER + SAVINGS
+      ====================================== */}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <WeatherCard
 
-          temperature={dashboard.weather.temperature}
-          humidity={dashboard.weather.humidity}
-          wind={dashboard.weather.wind_speed}
-          condition={dashboard.weather.condition}
+          temperature={
+            weather.temperature ?? "N/A"
+          }
+
+          humidity={
+            weather.humidity ?? "N/A"
+          }
+
+          wind={
+            weather.wind_speed ?? "N/A"
+          }
+
+          condition={
+            weather.condition ?? "N/A"
+          }
 
         />
 
+
         <SavingsCard
 
-          amount={dashboard.analytics.yearly_saving}
+          amount={
+            analytics.yearly_saving ?? 0
+          }
 
         />
 
       </div>
 
-      {/* Recommendations */}
 
-      <div className="bg-white rounded-xl shadow p-6 mt-6">
+      {/* ======================================
+          RECOMMENDATIONS
+      ====================================== */}
 
-        <h2 className="text-2xl font-semibold mb-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
 
-          Recommended Appliances
+        <div className="flex items-center justify-between mb-5">
 
-        </h2>
+          <div>
+
+            <h2 className="text-xl font-semibold text-gray-900">
+
+              Recommended Appliances
+
+            </h2>
+
+            <p className="text-sm text-gray-500 mt-1">
+
+              Best appliances to use during peak solar generation.
+
+            </p>
+
+          </div>
+
+        </div>
+
 
         {
 
-          dashboard.appliances.recommended.map((item, index) => (
+          recommendedAppliances.length > 0 ? (
 
-            <RecommendationCard
+            <div className="space-y-3">
 
-              key={index}
+              {
 
-              appliance={item}
+                recommendedAppliances.map(
+                  (item, index) => (
 
-              time={dashboard.appliances.best_time}
+                    <RecommendationCard
 
-            />
+                      key={`${item}-${index}`}
 
-          ))
+                      appliance={item}
+
+                      time={
+                        appliances.best_time ||
+                        "Best solar hours"
+                      }
+
+                    />
+
+                  )
+                )
+
+              }
+
+            </div>
+
+          ) : (
+
+            <div className="py-8 text-center">
+
+              <p className="text-gray-500">
+
+                No appliance recommendations available yet.
+
+              </p>
+
+              <p className="text-sm text-gray-400 mt-2">
+
+                Configure your appliances in Settings
+                to receive personalized recommendations.
+
+              </p>
+
+            </div>
+
+          )
 
         }
 
       </div>
+
 
     </DashboardLayout>
 
   );
 
 };
+
 
 export default DashboardPage;

@@ -100,6 +100,9 @@ const Sidebar = () => {
         </NavLink>
         
       </div>
+      <form >
+        <button type="Logout" className="bg-amber-500 text-white w-full mt-4 py-2 rounded-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Logout</button>
+      </form>
 
     </div>
   );

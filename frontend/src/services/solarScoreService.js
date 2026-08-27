@@ -1,4 +1,4 @@
-import aiApi from "./aiApi";
+import api from "./api";
 
 export const getSolarScore = async (
     latitude,
@@ -7,7 +7,7 @@ export const getSolarScore = async (
     end
 ) => {
 
-    const response = await aiApi.get("/solar-score", {
+    const response = await api.get("/solar-score", {
         params: {
             latitude,
             longitude,

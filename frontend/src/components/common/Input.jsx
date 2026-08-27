@@ -12,12 +12,11 @@ const Input = ({
       </label>
 
       <input
-        className = "w-full border rounded-lg p-3"
         type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full border rounded-lg p-3"
+        className ="w-full border rounded-lg p-3"
       />
     </div>
   );

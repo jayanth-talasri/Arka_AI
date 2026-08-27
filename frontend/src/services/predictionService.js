@@ -1,4 +1,4 @@
-import aiApi from "./aiApi";
+import api from "./api";
 
 export const getPrediction = async (
     latitude,
@@ -7,7 +7,7 @@ export const getPrediction = async (
     end
 ) => {
 
-    const response = await aiApi.get("/predict", {
+    const response = await api.get("/predict", {
         params: {
             latitude,
             longitude,

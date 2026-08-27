@@ -1,45 +1,41 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+    baseURL: "http://localhost:5000/api",
+    timeout: 30000,
 });
-// REQUEST INTERCEPTOR
+
 api.interceptors.request.use(
-  (config) => {
+    (config) => {
 
-    const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+
+    (error) => {
+        return Promise.reject(error);
     }
-
-    return config;
-  },
-
-  (error) => {
-    return Promise.reject(error);
-  }
 );
 
-// RESPONSE INTERCEPTOR
 api.interceptors.response.use(
+    (response) => response,
 
-  (response) => {
-    return response;
-  },
+    (error) => {
 
-  (error) => {
+        if (error.response?.status === 401) {
 
-    if (error.response?.status === 401) {
+            localStorage.removeItem("token");
 
-      localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
 
-      window.location.href = "/login";
+        return Promise.reject(error);
     }
-
-    return Promise.reject(error);
-  }
-
 );
 
 export default api;

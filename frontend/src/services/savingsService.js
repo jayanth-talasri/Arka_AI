@@ -1,20 +1,11 @@
-import aiApi from "./aiApi";
+import api from "./api";
 
-export const getSavings = async (
-  latitude,
-  longitude,
-  start,
-  end
-) => {
 
-  const response = await aiApi.get("/savings", {
-    params: {
-      latitude,
-      longitude,
-      start,
-      end,
-    },
-  });
+export const getSavings = async () => {
 
-  return response.data;
+    const response =
+        await api.get("/savings");
+
+    return response.data;
+
 };

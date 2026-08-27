@@ -1,4 +1,4 @@
-import aiApi from "./aiApi";
+import api from "./api";
 
 export const getCarbonImpact = async (
   latitude,
@@ -6,7 +6,7 @@ export const getCarbonImpact = async (
   start,
   end
 ) => {
-  const res = await aiApi.get("/carbon-impact", {
+  const res = await api.get("/carbon-impact", {
     params: {
       latitude,
       longitude,

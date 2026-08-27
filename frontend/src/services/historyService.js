@@ -1,4 +1,4 @@
-import aiApi from "./aiApi";
+import api from "./api";
 
 export const getHistory = async (
     latitude,
@@ -6,7 +6,7 @@ export const getHistory = async (
     start,
     end
 ) => {
-    const response = await aiApi.get("/history", {
+    const response = await api.get("/history", {
         params: {
             latitude,
             longitude,
