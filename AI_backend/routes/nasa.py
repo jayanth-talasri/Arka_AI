@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from services.nasa_service import get_nasa_weather
+from dependencies.auth import verify_ai_api_key
 
-router = APIRouter()
+router = APIRouter( dependencies=[Depends(verify_ai_api_key)])
 
 @router.get("/weather")
 def weather(
@@ -12,10 +13,10 @@ def weather(
 ):
 
     data = get_nasa_weather(
-        latitude,
-        longitude,
-        start,
-        end
+        latitude=latitude,
+        longitude=longitude,
+        start=start,
+        end=end
     )
 
     return data

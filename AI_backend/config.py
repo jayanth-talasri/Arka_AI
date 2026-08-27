@@ -3,6 +3,12 @@ import os
 
 load_dotenv()
 
+print("================================")
+print("AI BACKEND CONFIG")
+print("AI_API_KEY EXISTS:", bool(os.getenv("AI_API_KEY")))
+print("AI_API_KEY LENGTH:", len(os.getenv("AI_API_KEY", "")))
+print("================================")
+
 HOST = os.getenv("HOST")
 PORT = int(os.getenv("PORT"))
 

@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from dependencies.auth import verify_ai_api_key
 
 from services.nasa_service import get_nasa_weather
 from services.preprocessing import nasa_json_to_dataframe
@@ -7,7 +8,7 @@ from services.solar_score import solar_score
 from schemas.response_schema import SolarScoreResponse
 
 
-router = APIRouter()
+router = APIRouter( dependencies=[Depends(verify_ai_api_key)])
 
 
 @router.get(

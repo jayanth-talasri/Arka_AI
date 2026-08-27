@@ -15,10 +15,16 @@ def verify_ai_api_key(
             detail="AI API key is not configured"
         )
 
+    if not x_ai_api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="AI API key missing"
+        )
+
     if x_ai_api_key != expected_key:
         raise HTTPException(
             status_code=401,
-            detail="Unauthorized AI backend request"
+            detail="Invalid AI API key"
         )
 
     return True
