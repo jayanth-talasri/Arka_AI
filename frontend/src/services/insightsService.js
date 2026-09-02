@@ -1,20 +1,10 @@
 import api from "./api";
+import { buildDateParams } from "./apiHelper";
 
-export const getInsights = async (
-    latitude,
-    longitude,
-    start,
-    end
-) => {
+export const getInsights = async (params = {}) => {
+  const response = await api.get("/insights", {
+    params: buildDateParams(params),
+  });
 
-    const response = await api.get("/insights", {
-        params: {
-            latitude,
-            longitude,
-            start,
-            end
-        }
-    });
-
-    return response.data;
+  return response.data?.insights || {};
 };

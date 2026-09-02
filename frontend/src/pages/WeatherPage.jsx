@@ -4,116 +4,198 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 import WeatherCard from "../components/cards/WeatherCard";
 import KPICard from "../components/cards/KPICard";
+import Loader from "../components/common/Loader";
+import ErrorMessage from "../components/common/ErrorMessage";
 
 import { getWeather } from "../services/weatherService";
 import { getCarbonImpact } from "../services/carbonService";
 
+
 const WeatherPage = () => {
+  const [weather, setWeather] = useState(null);
+  const [carbon, setCarbon] = useState(null);
 
-    const [weather, setWeather] = useState(null);
-    const [carbon, setCarbon] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
 
-        const loadData = async () => {
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-            const latitude = 17.385;
-            const longitude = 78.487;
-            const start = "20240101";
-            const end = "20240107";
+        const [
+          weatherData,
+          carbonData,
+        ] = await Promise.all([
+          getWeather(),
+          getCarbonImpact(),
+        ]);
 
-            try{
+        setWeather(weatherData);
+        setCarbon(carbonData);
 
-                const weatherData = await getWeather(
-                    latitude,
-                    longitude,
-                    start,
-                    end
-                );
+      } catch (err) {
+        console.error(
+          "Weather loading error:",
+          err
+        );
 
-                const carbonData = await getCarbonImpact(
-                    latitude,
-                    longitude,
-                    start,
-                    end
-                );
+        setError(
+          err?.response?.data?.message ||
+          err?.response?.data?.detail ||
+          "Failed to load weather data."
+        );
 
-                setWeather(weatherData);
-                setCarbon(carbonData);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-            }
+    loadData();
+  }, []);
 
-            catch(err){
-                console.log(err);
-            }
 
-        };
+  if (loading) {
+    return (
+      <DashboardLayout>
 
-        loadData();
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Loader />
+        </div>
 
-    },[]);
-
-    if(!weather || !carbon){
-        return <DashboardLayout><h2 className="text-2xl font-bold">Loading...</h2></DashboardLayout>;
-    }
-
-    return(
-
-        <DashboardLayout>
-
-            <h1 className="text-4xl font-bold mb-8">
-                Weather
-            </h1>
-
-            <div className="grid grid-cols-4 gap-6 mb-8">
-
-                <KPICard
-                    title="Temperature"
-                    value={`${weather.temperature} °C`}
-                />
-
-                <KPICard
-                    title="Humidity"
-                    value={`${weather.humidity}%`}
-                />
-
-                <KPICard
-                    title="Wind Speed"
-                    value={`${weather.wind_speed} m/s`}
-                />
-
-                <KPICard
-                    title="Condition"
-                    value={weather.condition}
-                />
-
-            </div>
-
-            <WeatherCard weather={weather} />
-
-            <div className="grid grid-cols-3 gap-6 mt-8">
-
-                <KPICard
-                    title="CO₂ Saved"
-                    value={`${carbon.co2_saved} kg`}
-                />
-
-                <KPICard
-                    title="Trees Equivalent"
-                    value={carbon.trees_equivalent}
-                />
-
-                <KPICard
-                    title="Panel Efficiency"
-                    value={`${carbon.panel_efficiency}%`}
-                />
-
-            </div>
-
-        </DashboardLayout>
-
+      </DashboardLayout>
     );
+  }
 
+
+  if (error) {
+    return (
+      <DashboardLayout>
+
+        <div className="p-6">
+          <ErrorMessage message={error} />
+        </div>
+
+      </DashboardLayout>
+    );
+  }
+
+
+  return (
+    <DashboardLayout>
+
+      <div className="p-6">
+
+        <h1 className="text-4xl font-bold mb-8">
+          Weather & Environmental Impact
+        </h1>
+
+
+        {/* WEATHER KPIs */}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+
+          <KPICard
+            title="Temperature"
+            value={Number(
+              weather?.temperature || 0
+            ).toFixed(2)}
+            unit="°C"
+          />
+
+
+          <KPICard
+            title="Humidity"
+            value={Number(
+              weather?.humidity || 0
+            ).toFixed(2)}
+            unit="%"
+          />
+
+
+          <KPICard
+            title="Wind Speed"
+            value={Number(
+              weather?.wind_speed || 0
+            ).toFixed(2)}
+            unit="m/s"
+          />
+
+
+          <KPICard
+            title="Condition"
+            value={weather?.condition || "Unknown"}
+            unit=""
+          />
+
+        </div>
+
+
+        {weather && (
+          <WeatherCard weather={weather} />
+        )}
+
+
+        {/* ENVIRONMENTAL IMPACT */}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+
+          <KPICard
+            title="Daily CO₂ Saved"
+            value={Number(
+              carbon?.daily_co2_saved || 0
+            ).toFixed(2)}
+            unit="kg"
+          />
+
+
+          <KPICard
+            title="Yearly CO₂ Saved"
+            value={Number(
+              carbon?.yearly_co2_saved || 0
+            ).toFixed(2)}
+            unit="kg"
+          />
+
+
+          <KPICard
+            title="Trees Equivalent"
+            value={Number(
+              carbon?.trees_equivalent || 0
+            ).toFixed(2)}
+            unit="trees"
+          />
+
+
+          <KPICard
+            title="Coal Saved"
+            value={Number(
+              carbon?.coal_saved || 0
+            ).toFixed(2)}
+            unit="kg"
+          />
+
+        </div>
+
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+          <KPICard
+            title="Petrol Saved"
+            value={Number(
+              carbon?.petrol_saved || 0
+            ).toFixed(2)}
+            unit="litres"
+          />
+
+        </div>
+
+      </div>
+
+    </DashboardLayout>
+  );
 };
 
 export default WeatherPage;

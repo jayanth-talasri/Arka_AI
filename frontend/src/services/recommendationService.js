@@ -1,20 +1,14 @@
 import api from "./api";
+import { buildDateParams } from "./apiHelper";
 
-export const getRecommendations = async (
-    latitude,
-    longitude,
-    start,
-    end
-) => {
+export const getRecommendations = async (params = {}) => {
+  const response = await api.get("/recommendation", {
+    params: buildDateParams(params),
+  });
 
-    const response = await api.get("/recommendation", {
-        params: {
-            latitude,
-            longitude,
-            start,
-            end
-        }
-    });
-
-    return response.data;
+  return (
+    response.data?.recommendation ||
+    response.data?.recommendations ||
+    response.data
+  );
 };

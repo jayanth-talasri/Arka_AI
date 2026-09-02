@@ -1,19 +1,10 @@
 import api from "./api";
+import { buildDateParams } from "./apiHelper";
 
-export const getCarbonImpact = async (
-  latitude,
- longitude,
-  start,
-  end
-) => {
-  const res = await api.get("/carbon-impact", {
-    params: {
-      latitude,
-      longitude,
-      start,
-      end,
-    },
+export const getCarbonImpact = async (params = {}) => {
+  const response = await api.get("/carbon", {
+    params: buildDateParams(params),
   });
 
-  return res.data;
+  return response.data?.carbon_impact || {};
 };

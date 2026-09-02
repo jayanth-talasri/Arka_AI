@@ -1,20 +1,10 @@
 import api from "./api";
+import { buildDateParams } from "./apiHelper";
 
-export const getWeather = async (
-    latitude,
-    longitude,
-    start,
-    end
-) => {
+export const getWeather = async (params = {}) => {
+  const response = await api.get("/weather", {
+    params: buildDateParams(params),
+  });
 
-    const response = await api.get("/weather", {
-        params: {
-            latitude,
-            longitude,
-            start,
-            end
-        }
-    });
-
-    return response.data;
+  return response.data?.weather || {};
 };

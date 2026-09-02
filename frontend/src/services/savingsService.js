@@ -1,11 +1,10 @@
 import api from "./api";
+import { buildDateParams } from "./apiHelper";
 
+export const getSavings = async (params = {}) => {
+  const response = await api.get("/savings", {
+    params: buildDateParams(params),
+  });
 
-export const getSavings = async () => {
-
-    const response =
-        await api.get("/savings");
-
-    return response.data;
-
+  return response.data?.savings || {};
 };

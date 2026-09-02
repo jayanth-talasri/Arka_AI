@@ -1,19 +1,7 @@
 import api from "./api";
 
-export const getHistory = async (
-    latitude,
-    longitude,
-    start,
-    end
-) => {
-    const response = await api.get("/history", {
-        params: {
-            latitude,
-            longitude,
-            start,
-            end,
-        },
-    });
+export const getHistory = async () => {
+  const response = await api.get("/history");
 
-    return response.data;
+  return response.data;
 };

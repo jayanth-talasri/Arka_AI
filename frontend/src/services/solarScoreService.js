@@ -1,20 +1,10 @@
 import api from "./api";
+import { buildDateParams } from "./apiHelper";
 
-export const getSolarScore = async (
-    latitude,
-    longitude,
-    start,
-    end
-) => {
+export const getSolarScore = async (params = {}) => {
+  const response = await api.get("/solar-score", {
+    params: buildDateParams(params),
+  });
 
-    const response = await api.get("/solar-score", {
-        params: {
-            latitude,
-            longitude,
-            start,
-            end
-        }
-    });
-
-    return response.data;
+  return response.data?.solar_score || {};
 };
