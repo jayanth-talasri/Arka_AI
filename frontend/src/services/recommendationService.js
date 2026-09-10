@@ -2,7 +2,7 @@ import api from "./api";
 import { buildDateParams } from "./apiHelper";
 
 export const getRecommendations = async (params = {}) => {
-  const response = await api.get("/recommendation", {
+  const response = await api.get("/recommendations", {
     params: buildDateParams(params),
   });
 

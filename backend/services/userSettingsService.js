@@ -26,11 +26,30 @@ const getUserSettings = async (userId) => {
     }
 
 
-    return result.rows[0];
+    const settings = result.rows[0];
+
+
+    return {
+
+        location: settings.location,
+
+        latitude: Number(settings.latitude),
+
+        longitude: Number(settings.longitude),
+
+        solar_capacity: Number(settings.solar_capacity),
+
+        electricity_rate: Number(settings.electricity_rate),
+
+        appliance_info: settings.appliance_info
+
+    };
 
 };
 
 
 module.exports = {
+
     getUserSettings
+
 };

@@ -33,7 +33,7 @@ const RecommendationsPage = () => {
           analyticsResponse,
           weatherResponse,
         ] = await Promise.all([
-          getRecommendations(START_DATE, END_DATE),
+          getRecommendation(START_DATE, END_DATE),
           getAppliances(START_DATE, END_DATE),
           getAnalytics(START_DATE, END_DATE),
           getWeather(),

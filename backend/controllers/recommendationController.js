@@ -12,6 +12,10 @@ const getRecommendations = async (req, res) => {
             end
         } = req.query;
 
+        // ==========================================
+        // VALIDATE DATES
+        // ==========================================
+
         if (!start || !end) {
 
             return res.status(400).json({
@@ -49,28 +53,82 @@ const getRecommendations = async (req, res) => {
 
         }
 
-        const settings = settingsResult.rows[0];
+        const settings =
+            settingsResult.rows[0];
 
         // ==========================================
-        // CALL AI RECOMMENDATION API
+        // VALIDATE COORDINATES
+        // ==========================================
+
+        if (
+            settings.latitude === null ||
+            settings.latitude === undefined ||
+            settings.longitude === null ||
+            settings.longitude === undefined
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Latitude and longitude are required in user settings"
+            });
+
+        }
+
+        // ==========================================
+        // AI BACKEND
+        // ==========================================
+
+        const aiUrl =
+            `${process.env.AI_BACKEND_URL}/recommendation`;
+
+        console.log(
+            "\n========== RECOMMENDATION PROXY =========="
+        );
+
+        console.log("User ID:", userId);
+        console.log("AI URL:", aiUrl);
+        console.log("Latitude:", settings.latitude);
+        console.log("Longitude:", settings.longitude);
+        console.log("Start:", start);
+        console.log("End:", end);
+
+        // ==========================================
+        // CALL AI BACKEND
         // ==========================================
 
         const response = await axios.get(
-            `${process.env.AI_BACKEND_URL}/recommendation`,
+            aiUrl,
             {
+
                 params: {
-                    latitude: Number(settings.latitude),
-                    longitude: Number(settings.longitude),
+                    latitude:
+                        Number(settings.latitude),
+
+                    longitude:
+                        Number(settings.longitude),
+
                     start,
                     end
                 },
-                 headers: {
-                    "x-api-key": process.env.AI_API_KEY
+
+                headers: {
+                    "x-ai-api-key":
+                        process.env.AI_API_KEY
                 },
+
                 timeout: 120000
             }
         );
-          
+
+        console.log(
+            "AI Recommendation Response:",
+            response.data
+        );
+
+        // ==========================================
+        // SUCCESS
+        // ==========================================
 
         return res.status(200).json({
 
@@ -79,38 +137,87 @@ const getRecommendations = async (req, res) => {
             user_id: userId,
 
             settings: {
-                location: settings.location,
-                solar_capacity: settings.solar_capacity,
-                electricity_rate: settings.electricity_rate,
-                appliance_info: settings.appliance_info
+
+                location:
+                    settings.location,
+
+                latitude:
+                    Number(settings.latitude),
+
+                longitude:
+                    Number(settings.longitude),
+
+                solar_capacity:
+                    Number(settings.solar_capacity),
+
+                electricity_rate:
+                    Number(settings.electricity_rate),
+
+                appliance_info:
+                    settings.appliance_info
             },
 
-            recommendations: response.data
-
+            recommendations:
+                response.data
         });
 
     } catch (error) {
 
-        console.error("RECOMMENDATION ERROR:", error);
+        console.error(
+            "\n========== RECOMMENDATION ERROR =========="
+        );
+
+        // ==========================================
+        // AI BACKEND ERROR
+        // ==========================================
 
         if (error.response) {
 
-            return res.status(error.response.status).json({
-                success: false,
-                message: "AI recommendation request failed",
-                error: error.response.data
-            });
+            console.error(
+                "AI Backend Status:",
+                error.response.status
+            );
 
+            console.error(
+                "AI Backend Response:",
+                error.response.data
+            );
+
+            return res.status(
+                error.response.status
+            ).json({
+
+                success: false,
+
+                message:
+                    "AI recommendation request failed",
+
+                error:
+                    error.response.data
+            });
         }
 
+        // ==========================================
+        // NODE / NETWORK ERROR
+        // ==========================================
+
+        console.error(
+            "Unhandled Error:",
+            error.message
+        );
+
         return res.status(500).json({
+
             success: false,
-            message: "Failed to fetch recommendations",
-            error: error.message
+
+            message:
+                "Failed to fetch recommendations",
+
+            error:
+                error.message
         });
     }
 };
-
 
 module.exports = {
     getRecommendations

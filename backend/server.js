@@ -62,7 +62,7 @@ app.use("/api/settings", authenticate, settingsRoutes);
 
 app.use("/api/forecast", authenticate, forecastRoutes);
 
-app.use("/api/recommendations", authenticate, recommendationRoutes);
+app.use("/api/recommendation", authenticate, recommendationRoutes);
 
 app.use("/api/analytics", authenticate, analyticsRoutes);
 

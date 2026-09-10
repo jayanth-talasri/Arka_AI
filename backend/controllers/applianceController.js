@@ -7,6 +7,24 @@ const getAppliances = async (req, res) => {
 
         const userId = req.user.id;
 
+        const {
+            start,
+            end
+        } = req.query;
+
+        // ==========================================
+        // VALIDATE DATES
+        // ==========================================
+
+        if (!start || !end) {
+
+            return res.status(400).json({
+                success: false,
+                message: "start and end are required"
+            });
+
+        }
+
         // ==========================================
         // GET USER SETTINGS
         // ==========================================
@@ -38,63 +56,66 @@ const getAppliances = async (req, res) => {
         const settings = result.rows[0];
 
         // ==========================================
-        // VALIDATE LOCATION
+        // VALIDATE COORDINATES
         // ==========================================
 
         if (
             settings.latitude === null ||
-            settings.longitude === null
+            settings.latitude === undefined ||
+            settings.longitude === null ||
+            settings.longitude === undefined
         ) {
 
             return res.status(400).json({
                 success: false,
-                message: "Latitude and longitude are required in user settings"
+                message:
+                    "Latitude and longitude are required in user settings"
             });
 
         }
 
-        console.log("========== APPLIANCE PROXY ==========");
-        console.log("User ID:", userId);
-        console.log("Location:", settings.location);
-        console.log("Latitude:", settings.latitude);
-        console.log("Longitude:", settings.longitude);
-        console.log("Appliances:", settings.appliance_info);
-
         // ==========================================
-        // AI BACKEND
+        // AI BACKEND URL
         // ==========================================
 
         const aiUrl =
             `${process.env.AI_BACKEND_URL}/appliances`;
 
-        console.log("AI Appliance URL:", aiUrl);
-
-        const response = await axios.get(
-            aiUrl,
-            {
-                params: {
-
-                    latitude: settings.latitude,
-                    longitude: settings.longitude,
-
-                    // Use the same period your AI endpoint expects
-                    start: "20240101",
-                    end: "20240107"
-                },
-
-                headers: {
-                    "X-AI-Token":
-                        process.env.AI_INTERNAL_TOKEN
-                },
-
-                timeout: 120000
-            }
-        );
-
-        console.log("AI Appliance response received");
+        console.log("\n========== APPLIANCE PROXY ==========");
+        console.log("User ID:", userId);
+        console.log("AI URL:", aiUrl);
+        console.log("Latitude:", settings.latitude);
+        console.log("Longitude:", settings.longitude);
+        console.log("Start:", start);
+        console.log("End:", end);
 
         // ==========================================
-        // RESPONSE
+        // CALL AI BACKEND
+        // ==========================================
+
+        const response = await axios.get(aiUrl, {
+
+            params: {
+                latitude: Number(settings.latitude),
+                longitude: Number(settings.longitude),
+                start,
+                end
+            },
+
+            headers: {
+                "x-ai-api-key": process.env.AI_API_KEY
+            },
+
+            timeout: 120000
+        });
+
+        console.log(
+            "AI Appliance Response:",
+            response.data
+        );
+
+        // ==========================================
+        // SUCCESS RESPONSE
         // ==========================================
 
         return res.status(200).json({
@@ -105,20 +126,30 @@ const getAppliances = async (req, res) => {
 
             settings: {
                 location: settings.location,
-                latitude: settings.latitude,
-                longitude: settings.longitude,
-                solar_capacity: settings.solar_capacity,
-                electricity_rate: settings.electricity_rate,
-                appliance_info: settings.appliance_info
+                latitude: Number(settings.latitude),
+                longitude: Number(settings.longitude),
+                solar_capacity: Number(
+                    settings.solar_capacity
+                ),
+                electricity_rate: Number(
+                    settings.electricity_rate
+                ),
+                appliance_info:
+                    settings.appliance_info
             },
 
             appliances: response.data
-
         });
 
     } catch (error) {
 
-        console.error("========== APPLIANCE ERROR ==========");
+        console.error(
+            "\n========== APPLIANCE ERROR =========="
+        );
+
+        // ==========================================
+        // AI BACKEND ERROR
+        // ==========================================
 
         if (error.response) {
 
@@ -132,7 +163,9 @@ const getAppliances = async (req, res) => {
                 error.response.data
             );
 
-            return res.status(error.response.status).json({
+            return res.status(
+                error.response.status
+            ).json({
 
                 success: false,
 
@@ -141,13 +174,15 @@ const getAppliances = async (req, res) => {
 
                 error:
                     error.response.data
-
             });
-
         }
 
+        // ==========================================
+        // NODE / NETWORK ERROR
+        // ==========================================
+
         console.error(
-            "Unhandled error:",
+            "Unhandled Error:",
             error.message
         );
 
@@ -156,8 +191,10 @@ const getAppliances = async (req, res) => {
             success: false,
 
             message:
-                "Failed to fetch appliance recommendations"
+                "Failed to fetch appliance recommendations",
 
+            error:
+                error.message
         });
     }
 };

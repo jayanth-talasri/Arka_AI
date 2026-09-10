@@ -1,12 +1,47 @@
+import numpy as np
+
+
 def appliance_schedule(prediction):
 
-    if prediction >= 6:
+    # =====================================
+    # CONVERT PREDICTION TO SINGLE FLOAT
+    # =====================================
+
+    if isinstance(prediction, np.ndarray):
+
+        if prediction.size == 0:
+            prediction_value = 0.0
+        else:
+            prediction_value = float(
+                prediction.flatten()[0]
+            )
+
+    elif isinstance(prediction, list):
+
+        if len(prediction) == 0:
+            prediction_value = 0.0
+        else:
+            prediction_value = float(
+                prediction[0]
+            )
+
+    else:
+        prediction_value = float(
+            prediction
+        )
+
+    # =====================================
+    # APPLIANCE RECOMMENDATIONS
+    # =====================================
+
+    if prediction_value >= 6:
 
         return {
 
             "status": "Excellent",
 
-            "best_time": "10:00 AM - 3:00 PM",
+            "best_time":
+                "10:00 AM - 3:00 PM",
 
             "recommended": [
 
@@ -21,15 +56,17 @@ def appliance_schedule(prediction):
                 "Dishwasher"
 
             ]
+
         }
 
-    elif prediction >= 4:
+    elif prediction_value >= 4:
 
         return {
 
             "status": "Average",
 
-            "best_time": "11:00 AM - 2:00 PM",
+            "best_time":
+                "11:00 AM - 2:00 PM",
 
             "recommended": [
 
@@ -40,6 +77,7 @@ def appliance_schedule(prediction):
                 "Water Pump"
 
             ]
+
         }
 
     else:
@@ -48,7 +86,8 @@ def appliance_schedule(prediction):
 
             "status": "Poor",
 
-            "best_time": "12:00 PM",
+            "best_time":
+                "12:00 PM",
 
             "recommended": [
 
@@ -57,4 +96,5 @@ def appliance_schedule(prediction):
                 "LED Lights"
 
             ]
+
         }
