@@ -6,6 +6,7 @@ import {
   Leaf,
   Gauge,
   TrendingUp,
+  Sparkles,
 } from "lucide-react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -208,6 +209,8 @@ const AnalyticalPage = () => {
             color="from-green-600 to-teal-500"
           />
 
+          
+
         </div>
 
 
@@ -270,7 +273,7 @@ const AnalyticalPage = () => {
 
         {/* CHARTS */}
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 min-w-0">
 
           <AnalyticsCard title="Energy Generation">
 
@@ -339,23 +342,35 @@ const AnalyticalPage = () => {
 
             {insights.length > 0 ? (
 
-              insights.map((item, index) => (
+              insights.map((item, index) => {
+                const message =
+                  typeof item === "string"
+                    ? item
+                    : item?.message ||
+                      item?.insight ||
+                      item.text ||
+                      item.content ||
+                      item.recommendation;
 
-                <div
-                  key={index}
-                  className="p-4 rounded-xl bg-gray-50"
-                >
-                  {item}
-                </div>
+                if (!message) return null;
 
-              ))
-
+                return (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 boarder border-gray-500">
+                    <div classNmae="my-1 text amber-500 shrink-0">
+                      <Sparkles size={18} />
+                    </div>
+                  
+                    <p className="text-sm text-gray-700 leading-6">{message}</p>
+                  </div>
+                );
+              })
             ) : (
 
-              <div className="p-4 rounded-xl bg-gray-50 text-gray-500">
-                No insights available.
+              <div className="p-5 rounded-xl bg-gray-50 text-gray-500 text-sm">
+                No insights details available.
               </div>
-
             )}
 
           </div>

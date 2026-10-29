@@ -1,9 +1,17 @@
+
+import { useAuth } from "../../context/AuthContext";
+
 const Topbar = () => {
+  const { user } = useAuth();
+
+  const displayName = user?.name || "User";
+  const initial = displayName.trim().charAt(0).toUpperCase() || "U";
+
   return (
     <div className="bg-white shadow rounded-xl px-6 py-4 flex justify-between items-center mb-6">
 
       <h1 className="text-2xl font-bold">
-        Welcome, Jayanth 👋
+        Welcome, {displayName} 👋
       </h1>
 
       <div className="flex items-center gap-4">
@@ -15,11 +23,10 @@ const Topbar = () => {
         />
 
         <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">
-          J
+          {initial}
         </div>
 
       </div>
-
     </div>
   );
 };

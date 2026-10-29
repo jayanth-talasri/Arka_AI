@@ -32,10 +32,10 @@ const DashboardPage = () => {
         setError("");
 
         const data = await getDashboard(
-          17.385,
-          78.487,
-          "20240101",
-          "20240107"
+          {
+            startDate: "20260101",
+            endDate: "20260107"
+          }
         );
 
         console.log("DASHBOARD RESPONSE:", data);
@@ -233,19 +233,7 @@ const DashboardPage = () => {
       </div>
 
 
-      {/* ======================================
-          FORECAST
-      ====================================== */}
-
-      <div className="mb-6">
-
-        <ForecastChart
-          prediction={prediction}
-        />
-
-      </div>
-
-
+   
       {/* ======================================
           WEATHER + SAVINGS
       ====================================== */}

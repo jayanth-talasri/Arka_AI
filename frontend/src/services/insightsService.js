@@ -1,3 +1,4 @@
+
 import api from "./api";
 import { buildDateParams } from "./apiHelper";
 
@@ -6,5 +7,20 @@ export const getInsights = async (params = {}) => {
     params: buildDateParams(params),
   });
 
-  return response.data?.insights || {};
+  console.log(
+    "INSIGHTS FROM EXPRESS:",
+    response.data
+  );
+
+  const insights = response.data?.insights;
+
+  if (Array.isArray(insights)) {
+    return insights;
+  }
+
+  if (typeof insights === "string" && insights.trim()) {
+    return [insights];
+  }
+
+  return [];
 };
