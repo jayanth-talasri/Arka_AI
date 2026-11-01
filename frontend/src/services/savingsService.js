@@ -5,6 +5,5 @@ export const getSavings = async (params = {}) => {
   const response = await api.get("/savings", {
     params: buildDateParams(params),
   });
-
-  return response.data?.savings || {};
+  return response.data?.savings ?? response.data ?? {};
 };

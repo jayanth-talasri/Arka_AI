@@ -1,43 +1,29 @@
-def calculate_analytics(predicted_radiation: float):
-
-    panel_capacity = 5
-
-    daily_energy = predicted_radiation * panel_capacity
-
-    monthly_energy = daily_energy * 30
-
-    yearly_energy = daily_energy * 365
-
-    daily_saving = daily_energy * 8
-
-    monthly_saving = monthly_energy * 8
-
-    yearly_saving = yearly_energy * 8
-
-    co2_saved = daily_energy * 0.82
-
-    trees = yearly_energy / 7000
-
-    efficiency = (predicted_radiation / 7) * 100
-
+import numpy as np
+from utils.calculations import calculate_energy, calculate_savings
+def calculate_analytics(df):
+    valid_radiation = df["radiation"].dropna().astype(float)
+    valid_radiation = valid_radiation[np.isfinite(valid_radiation) & (valid_radiation >= 0)]
+    if valid_radiation.empty:
+        raise ValueError("No valid radiation records available for analytics.")
+    daily_energies = valid_radiation.apply(calculate_energy)
+    period_energy = float(daily_energies.sum())
+    average_daily_energy = float(daily_energies.mean())
+    period_saving = calculate_savings(period_energy)
+    monthly_energy_estimate = average_daily_energy * 30
+    yearly_energy_estimate = average_daily_energy * 365
+    average_radiation = float(valid_radiation.mean())
     return {
-
-        "daily_energy": round(daily_energy,2),
-
-        "monthly_energy": round(monthly_energy,2),
-
-        "yearly_energy": round(yearly_energy,2),
-
-        "daily_saving": round(daily_saving,2),
-
-        "monthly_saving": round(monthly_saving,2),
-
-        "yearly_saving": round(yearly_saving,2),
-
-        "co2_saved": round(co2_saved,2),
-
-        "trees_equivalent": round(trees,2),
-
-        "panel_efficiency": round(efficiency,2)
-
+        "period_energy": round(period_energy, 2),
+        "period_saving": round(period_saving, 2),
+        "daily_energy": round(average_daily_energy, 2),
+        "weekly_energy": round(period_energy, 2),
+        "monthly_energy": round(monthly_energy_estimate, 2),
+        "yearly_energy": round(yearly_energy_estimate, 2),
+        "daily_saving": round(calculate_savings(average_daily_energy), 2),
+        "weekly_saving": round(calculate_savings(period_energy), 2),
+        "monthly_saving": round(calculate_savings(monthly_energy_estimate), 2),
+        "yearly_saving": round(calculate_savings(yearly_energy_estimate), 2),
+        "co2_saved": round(period_energy * 0.82, 2),
+        "trees_equivalent": round(yearly_energy_estimate / 7000, 2),
+        "panel_efficiency": round((average_radiation / 7) * 100, 2)
     }

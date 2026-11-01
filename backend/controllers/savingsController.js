@@ -160,12 +160,6 @@ const getSavings = async (req, res) => {
                 error.message
 
         });
-
     }
-
 };
-
-
-module.exports = {
-    getSavings
-};
+module.exports = { getSavings };

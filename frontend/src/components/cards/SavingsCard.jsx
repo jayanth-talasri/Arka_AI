@@ -1,54 +1,28 @@
-import { useEffect, useState } from "react";
-
-import { getSavings } from "../../services/savingsService";
-
-const SavingsCard = () => {
-
-    const [saving, setSaving] = useState(null);
-
-    useEffect(() => {
-
-        async function load() {
-
-            const data = await getSavings(
-                17.385,
-                78.487,
-                "20240101",
-                "20240107"
-            );
-
-            setSaving(data);
-
-        }
-
-        load();
-
-    }, []);
-
-    if (!saving) return <p>Loading...</p>;
-
-    return (
-
-        <div className="bg-white rounded-xl shadow p-6">
-
-            <h2 className="font-bold mb-4">
-
-                Savings
-
-            </h2>
-
-            <p>Daily : ₹{saving.daily_saving}</p>
-
-            <p>Monthly : ₹{saving.monthly_saving}</p>
-
-            <p>Yearly : ₹{saving.yearly_saving}</p>
-
-            <p>Lifetime : ₹{saving.lifetime_saving}</p>
-
-        </div>
-
-    );
-
+const SavingsCard = ({ amount, range = "daily", status = "estimated" }) => {
+  const labels = {
+    daily: "Daily Savings",
+    weekly: "Weekly Savings",
+    monthly: "Monthly Savings",
+    yearly: "Yearly Savings"
+  };
+  const validAmount = amount !== null && amount !== undefined && Number.isFinite(Number(amount));
+  const statusLabels = {
+    actual: "Based on historical data",
+    estimated: "Estimated savings",
+    mixed: "Based on actual and estimated data",
+    unavailable: "Data unavailable"
+  };
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <h2 className="text-xl font-bold text-gray-900 mb-5">Solar Savings</h2>
+      <div className="rounded-xl bg-amber-50 p-5">
+        <p className="text-sm text-gray-500">{labels[range] || "Selected Period Savings"}</p>
+        <p className="text-3xl font-bold text-amber-600 mt-2">
+          {validAmount ? `₹${Number(amount).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "N/A"}
+        </p>
+      </div>
+      <p className="text-sm text-gray-500 mt-4">{statusLabels[status] || statusLabels.estimated}</p>
+    </div>
+  );
 };
-
 export default SavingsCard;

@@ -10,14 +10,12 @@ import ErrorMessage from "../components/common/ErrorMessage";
 import { getWeather } from "../services/weatherService";
 import { getCarbonImpact } from "../services/carbonService";
 
-
 const WeatherPage = () => {
   const [weather, setWeather] = useState(null);
   const [carbon, setCarbon] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
 
   useEffect(() => {
     const loadData = async () => {
@@ -56,7 +54,6 @@ const WeatherPage = () => {
     loadData();
   }, []);
 
-
   if (loading) {
     return (
       <DashboardLayout>
@@ -68,7 +65,6 @@ const WeatherPage = () => {
       </DashboardLayout>
     );
   }
-
 
   if (error) {
     return (
@@ -82,7 +78,6 @@ const WeatherPage = () => {
     );
   }
 
-
   return (
     <DashboardLayout>
 
@@ -91,7 +86,6 @@ const WeatherPage = () => {
         <h1 className="text-4xl font-bold mb-8">
           Weather & Environmental Impact
         </h1>
-
 
         {/* WEATHER KPIs */}
 
@@ -105,7 +99,6 @@ const WeatherPage = () => {
             unit="°C"
           />
 
-
           <KPICard
             title="Humidity"
             value={Number(
@@ -113,7 +106,6 @@ const WeatherPage = () => {
             ).toFixed(2)}
             unit="%"
           />
-
 
           <KPICard
             title="Wind Speed"
@@ -123,7 +115,6 @@ const WeatherPage = () => {
             unit="m/s"
           />
 
-
           <KPICard
             title="Condition"
             value={weather?.condition || "Unknown"}
@@ -132,11 +123,9 @@ const WeatherPage = () => {
 
         </div>
 
-
         {weather && (
           <WeatherCard weather={weather} />
         )}
-
 
         {/* ENVIRONMENTAL IMPACT */}
 
@@ -150,7 +139,6 @@ const WeatherPage = () => {
             unit="kg"
           />
 
-
           <KPICard
             title="Yearly CO₂ Saved"
             value={Number(
@@ -159,7 +147,6 @@ const WeatherPage = () => {
             unit="kg"
           />
 
-
           <KPICard
             title="Trees Equivalent"
             value={Number(
@@ -167,7 +154,6 @@ const WeatherPage = () => {
             ).toFixed(2)}
             unit="trees"
           />
-
 
           <KPICard
             title="Coal Saved"
@@ -178,7 +164,6 @@ const WeatherPage = () => {
           />
 
         </div>
-
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 

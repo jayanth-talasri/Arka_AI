@@ -25,35 +25,13 @@ import {
   Activity,
 } from "lucide-react";
 
-
 const HistoryPage = () => {
 
-  const {
-    history,
-    loading,
-    error,
-  } = useHistory();
-
+  const { history, loading, error, } = useHistory();
 
   /*
     Normalize backend response.
-
-    Expected possible structures:
-
-    {
-      success: true,
-      history: [...]
-    }
-
-    OR
-
-    {
-      data: [...]
-    }
-
-    OR directly:
-    [...]
-  */
+    Expected possible structures: { success: true, history: [...] } OR { data: [...] } OR directly: [...] */
 
   const historyData = useMemo(() => {
 
@@ -66,30 +44,23 @@ const HistoryPage = () => {
       return history;
     }
 
-
     if (Array.isArray(history.history)) {
       return history.history;
     }
-
 
     if (Array.isArray(history.data)) {
       return history.data;
     }
 
-
     if (history.history?.data) {
       return history.history.data;
     }
-
 
     return [];
 
   }, [history]);
 
-
-  /*
-    Prepare chart data
-  */
+  /* Prepare chart data */
 
   const chartData = useMemo(() => {
 
@@ -99,7 +70,6 @@ const HistoryPage = () => {
         item.date ||
         item.day ||
         `Day ${index + 1}`,
-
 
       radiation: Number(
 
@@ -115,10 +85,7 @@ const HistoryPage = () => {
 
   }, [historyData]);
 
-
-  /*
-    Average radiation
-  */
+  /* Average radiation */
 
   const averageRadiation = useMemo(() => {
 
@@ -126,28 +93,22 @@ const HistoryPage = () => {
       return 0;
     }
 
-
     const total = chartData.reduce(
       (sum, item) => sum + item.radiation,
       0
     );
 
-
     return total / chartData.length;
 
   }, [chartData]);
 
-
-  /*
-    Maximum radiation
-  */
+  /* Maximum radiation */
 
   const maximumRadiation = useMemo(() => {
 
     if (!chartData.length) {
       return 0;
     }
-
 
     return Math.max(
       ...chartData.map(
@@ -157,24 +118,15 @@ const HistoryPage = () => {
 
   }, [chartData]);
 
-
-  /*
-    Total recorded days
-  */
+  /* Total recorded days */
 
   const totalDays = chartData.length;
 
-
-  /*
-    Get settings if backend provides them
-  */
+  /* Get settings if backend provides them */
 
   const settings = history?.settings || {};
 
-
-  /*
-    Loading state
-  */
+  /* Loading state */
 
   if (loading) {
 
@@ -182,13 +134,7 @@ const HistoryPage = () => {
 
       <DashboardLayout>
 
-        <div className="
-          flex
-          min-h-[70vh]
-          items-center
-          justify-center
-        ">
-
+        <div className=" flex min-h-[70vh] items-center justify-center ">
           <Loader />
 
         </div>
@@ -199,10 +145,7 @@ const HistoryPage = () => {
 
   }
 
-
-  /*
-    Error state
-  */
+  /* Error state */
 
   if (error) {
 
@@ -224,42 +167,21 @@ const HistoryPage = () => {
 
   }
 
-
   return (
 
     <DashboardLayout>
 
-      <div className="
-        min-h-screen
-        bg-slate-50
-        px-4
-        py-6
-        md:px-8
-      ">
-
+      <div className=" min-h-screen bg-slate-50 px-4 py-6 md:px-8 ">
 
         {/* ================= HEADER ================= */}
 
         <div className="mb-8">
 
-          <div className="
-            flex
-            flex-col
-            gap-4
-            md:flex-row
-            md:items-center
-            md:justify-between
-          ">
-
+          <div className=" flex flex-col gap-4 md:flex-row md:items-center md:justify-between ">
 
             <div>
 
-              <div className="
-                mb-2
-                flex
-                items-center
-                gap-2
-              ">
+              <div className=" mb-2 flex items-center gap-2 ">
 
                 <div className="
                   flex
@@ -281,48 +203,17 @@ const HistoryPage = () => {
 
                 </div>
 
-
-                <span className="
-                  text-sm
-                  font-semibold
-                  tracking-wide
-                  text-amber-600
-                ">
-
-                  SOLAR INTELLIGENCE
-
-                </span>
+                <span className=" text-sm font-semibold tracking-wide text-amber-600 "> SOLAR INTELLIGENCE </span>
 
               </div>
 
-
-              <h1 className="
-                text-3xl
-                font-bold
-                tracking-tight
-                text-slate-900
-                md:text-4xl
-              ">
-
-                Energy History
-
-              </h1>
-
-
-              <p className="
-                mt-2
-                max-w-2xl
-                text-sm
-                text-slate-500
-              ">
-
+              <h1 className=" text-3xl font-bold tracking-tight text-slate-900 md:text-4xl "> Energy History </h1>
+              <p className=" mt-2 max-w-2xl text-sm text-slate-500 ">
                 Analyze historical solar generation
                 and identify production patterns.
-
               </p>
 
             </div>
-
 
             {/* Location */}
 
@@ -344,27 +235,11 @@ const HistoryPage = () => {
                 className="text-amber-500"
               />
 
-
               <div>
 
-                <p className="
-                  text-xs
-                  text-slate-400
-                ">
-
-                  Historical data
-
-                </p>
-
-
-                <p className="
-                  text-sm
-                  font-semibold
-                  text-slate-700
-                ">
-
+                <p className=" text-xs text-slate-400 "> Historical data </p>
+                <p className=" text-sm font-semibold text-slate-700 ">
                   {settings.location || "Your Solar Location"}
-
                 </p>
 
               </div>
@@ -375,17 +250,9 @@ const HistoryPage = () => {
 
         </div>
 
-
-
         {/* ================= KPI CARDS ================= */}
 
-        <div className="
-          grid
-          grid-cols-1
-          gap-5
-          md:grid-cols-3
-        ">
-
+        <div className=" grid grid-cols-1 gap-5 md:grid-cols-3 ">
 
           {/* Average Radiation */}
 
@@ -402,19 +269,8 @@ const HistoryPage = () => {
             hover:shadow-lg
           ">
 
-            <div className="
-              mb-5
-              flex
-              items-center
-              justify-between
-            ">
-
-
-              <div className="
-                rounded-xl
-                bg-amber-100
-                p-3
-              ">
+            <div className=" mb-5 flex items-center justify-between ">
+              <div className=" rounded-xl bg-amber-100 p-3 ">
 
                 <Sun
                   size={22}
@@ -422,7 +278,6 @@ const HistoryPage = () => {
                 />
 
               </div>
-
 
               <span className="
                 rounded-full
@@ -440,42 +295,17 @@ const HistoryPage = () => {
 
             </div>
 
+            <p className=" text-sm text-slate-500 "> Average Radiation </p>
 
-            <p className="
-              text-sm
-              text-slate-500
-            ">
-
-              Average Radiation
-
-            </p>
-
-
-            <h2 className="
-              mt-2
-              text-3xl
-              font-bold
-              text-slate-900
-            ">
+            <h2 className=" mt-2 text-3xl font-bold text-slate-900 ">
 
               {averageRadiation.toFixed(2)}
 
             </h2>
 
-
-            <p className="
-              mt-1
-              text-xs
-              text-slate-400
-            ">
-
-              kWh/m²/day
-
-            </p>
+            <p className=" mt-1 text-xs text-slate-400 "> kWh/m²/day </p>
 
           </div>
-
-
 
           {/* Maximum Radiation */}
 
@@ -492,19 +322,9 @@ const HistoryPage = () => {
             hover:shadow-lg
           ">
 
-            <div className="
-              mb-5
-              flex
-              items-center
-              justify-between
-            ">
+            <div className=" mb-5 flex items-center justify-between ">
 
-
-              <div className="
-                rounded-xl
-                bg-blue-100
-                p-3
-              ">
+              <div className=" rounded-xl bg-blue-100 p-3 ">
 
                 <TrendingUp
                   size={22}
@@ -512,7 +332,6 @@ const HistoryPage = () => {
                 />
 
               </div>
-
 
               <span className="
                 rounded-full
@@ -530,42 +349,14 @@ const HistoryPage = () => {
 
             </div>
 
-
-            <p className="
-              text-sm
-              text-slate-500
-            ">
-
-              Maximum Radiation
-
-            </p>
-
-
-            <h2 className="
-              mt-2
-              text-3xl
-              font-bold
-              text-slate-900
-            ">
-
+            <p className=" text-sm text-slate-500 "> Maximum Radiation </p>
+            <h2 className=" mt-2 text-3xl font-bold text-slate-900 ">
               {maximumRadiation.toFixed(2)}
-
             </h2>
 
-
-            <p className="
-              mt-1
-              text-xs
-              text-slate-400
-            ">
-
-              kWh/m²/day
-
-            </p>
+            <p className=" mt-1 text-xs text-slate-400 "> kWh/m²/day </p>
 
           </div>
-
-
 
           {/* Recorded Days */}
 
@@ -582,19 +373,8 @@ const HistoryPage = () => {
             hover:shadow-lg
           ">
 
-            <div className="
-              mb-5
-              flex
-              items-center
-              justify-between
-            ">
-
-
-              <div className="
-                rounded-xl
-                bg-purple-100
-                p-3
-              ">
+            <div className=" mb-5 flex items-center justify-between ">
+              <div className=" rounded-xl bg-purple-100 p-3 ">
 
                 <Activity
                   size={22}
@@ -602,7 +382,6 @@ const HistoryPage = () => {
                 />
 
               </div>
-
 
               <span className="
                 rounded-full
@@ -620,44 +399,13 @@ const HistoryPage = () => {
 
             </div>
 
-
-            <p className="
-              text-sm
-              text-slate-500
-            ">
-
-              Recorded Days
-
-            </p>
-
-
-            <h2 className="
-              mt-2
-              text-3xl
-              font-bold
-              text-slate-900
-            ">
-
-              {totalDays}
-
-            </h2>
-
-
-            <p className="
-              mt-1
-              text-xs
-              text-slate-400
-            ">
-
-              historical observations
-
-            </p>
+            <p className=" text-sm text-slate-500 "> Recorded Days </p>
+            <h2 className=" mt-2 text-3xl font-bold text-slate-900 "> {totalDays} </h2>
+            <p className=" mt-1 text-xs text-slate-400 "> historical observations </p>
 
           </div>
 
         </div>
-
-
 
         {/* ================= MAIN AREA CHART ================= */}
 
@@ -671,39 +419,17 @@ const HistoryPage = () => {
           shadow-sm
         ">
 
-
           <div className="mb-6">
 
-            <h2 className="
-              text-xl
-              font-bold
-              text-slate-900
-            ">
-
-              Solar Production History
-
-            </h2>
-
-
-            <p className="
-              mt-1
-              text-sm
-              text-slate-500
-            ">
-
+            <h2 className=" text-xl font-bold text-slate-900 "> Solar Production History </h2>
+            <p className=" mt-1 text-sm text-slate-500 ">
               Historical solar radiation trend
               based on your selected solar location.
-
             </p>
 
           </div>
 
-
-          <div className="
-            h-[360px]
-            w-full
-          ">
-
+          <div className=" h-[360px] w-full ">
 
             {chartData.length > 0 ? (
 
@@ -715,7 +441,6 @@ const HistoryPage = () => {
                 <AreaChart
                   data={chartData}
                 >
-
 
                   <defs>
 
@@ -733,7 +458,6 @@ const HistoryPage = () => {
                         stopOpacity={0.35}
                       />
 
-
                       <stop
                         offset="100%"
                         stopColor="#f59e0b"
@@ -744,7 +468,6 @@ const HistoryPage = () => {
 
                   </defs>
 
-
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
@@ -753,22 +476,17 @@ const HistoryPage = () => {
 
                   <XAxis
                     dataKey="day"
-                    tick={{
-                      fontSize: 12,
-                    }}
+                    tick={{ fontSize: 12, }}
                     tickLine={false}
                     axisLine={false}
                   />
 
 
                   <YAxis
-                    tick={{
-                      fontSize: 12,
-                    }}
+                    tick={{ fontSize: 12, }}
                     tickLine={false}
                     axisLine={false}
                   />
-
 
                   <Tooltip
 
@@ -780,7 +498,6 @@ const HistoryPage = () => {
                     }}
 
                   />
-
 
                   <Area
                     type="monotone"
@@ -799,17 +516,8 @@ const HistoryPage = () => {
 
             ) : (
 
-              <div className="
-                flex
-                h-full
-                items-center
-                justify-center
-                text-sm
-                text-slate-400
-              ">
-
+              <div className=" flex h-full items-center justify-center text-sm text-slate-400 ">
                 No historical data available.
-
               </div>
 
             )}
@@ -818,50 +526,18 @@ const HistoryPage = () => {
 
         </div>
 
-
-
         {/* ================= LINE CHART ================= */}
 
-        <div className="
-          mt-6
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-6
-          shadow-sm
-        ">
-
+        <div className=" mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm ">
 
           <div className="mb-6">
 
-            <h2 className="
-              text-xl
-              font-bold
-              text-slate-900
-            ">
-
-              Production Trend
-
-            </h2>
-
-
-            <p className="
-              mt-1
-              text-sm
-              text-slate-500
-            ">
-
-              Day-by-day movement
-              in solar radiation.
-
-            </p>
+            <h2 className=" text-xl font-bold text-slate-900 "> Production Trend </h2>
+            <p className=" mt-1 text-sm text-slate-500"> Day-by-day movement in solar radiation. </p>
 
           </div>
 
-
           <div className="h-[320px]">
-
 
             {chartData.length > 0 ? (
 
@@ -874,12 +550,10 @@ const HistoryPage = () => {
                   data={chartData}
                 >
 
-
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
                   />
-
 
                   <XAxis
                     dataKey="day"
@@ -887,15 +561,12 @@ const HistoryPage = () => {
                     axisLine={false}
                   />
 
-
                   <YAxis
                     tickLine={false}
                     axisLine={false}
                   />
 
-
                   <Tooltip />
-
 
                   <Line
                     type="monotone"
@@ -916,17 +587,8 @@ const HistoryPage = () => {
 
             ) : (
 
-              <div className="
-                flex
-                h-full
-                items-center
-                justify-center
-                text-sm
-                text-slate-400
-              ">
-
+              <div className=" flex h-full items-center justify-center text-sm text-slate-400 ">
                 No production trend available.
-
               </div>
 
             )}
@@ -935,7 +597,6 @@ const HistoryPage = () => {
 
         </div>
 
-
       </div>
 
     </DashboardLayout>
@@ -943,6 +604,5 @@ const HistoryPage = () => {
   );
 
 };
-
 
 export default HistoryPage;
