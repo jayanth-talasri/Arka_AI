@@ -4,17 +4,30 @@ from datetime import datetime, timedelta
 from services.nasa_service import get_nasa_weather
 from services.preprocessing import nasa_json_to_dataframe
 from services.prediction_service import predict_radiation
-def predict_live_radiation(latitude, longitude, target_date, live_weather):
+def predict_live_radiation(
+        latitude,
+        longitude,
+        target_date,
+        live_weather,
+        history_df=None):
     target = datetime.strptime(target_date, "%Y-%m-%d").date()
     history_end = target - timedelta(days=1)
     history_start = history_end - timedelta(days=44)
-    nasa_data = get_nasa_weather(
-        latitude,
-        longitude,
-        history_start.strftime("%Y%m%d"),
-        history_end.strftime("%Y%m%d")
-    )
-    history_df = nasa_json_to_dataframe(nasa_data)
+
+    if history_df is None:
+        nasa_data = get_nasa_weather(
+            latitude,
+            longitude,
+            history_start.strftime("%Y%m%d"),
+            history_end.strftime("%Y%m%d")
+        )
+        history_df = nasa_json_to_dataframe(nasa_data)
+    else:
+        history_df = history_df.copy()
+        history_df = history_df[
+            (history_df["date"] >= pd.Timestamp(history_start)) &
+            (history_df["date"] <= pd.Timestamp(history_end))
+        ].copy()
     if history_df.empty:
         raise ValueError("No historical NASA records available for LSTM prediction.")
     history_df["radiation"] = pd.to_numeric(history_df["radiation"], errors="coerce")

@@ -1,5 +1,5 @@
 import requests
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 API_URL = "https://api.open-meteo.com/v1/forecast"
 def get_live_weather(latitude, longitude, target_date=None):
@@ -76,6 +76,119 @@ def get_live_weather(latitude, longitude, target_date=None):
             "radiation_status": "estimated" if daily_radiation is not None else "unavailable"
         }
     except requests.RequestException as error:
-        raise RuntimeError(f"Live weather API request failed: {error}") from error
+        raise RuntimeError(f"Live Open-Meteo request failed: {error}") from error
     except (TypeError, ValueError, KeyError) as error:
-        raise RuntimeError(f"Unable to process live weather data: {error}") from error
+        raise RuntimeError(f"Unable to process live Open-Meteo data: {error}") from error
+    
+def get_seven_day_live_weather(latitude, longitude, start_date, end_date):
+    """
+    Fetch weather for an entire date range using one Open-Meteo request.
+    Returns one weather dictionary per date, compatible with the
+    existing live_prediction_service input.
+    """
+    from datetime import date
+
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": [
+            "shortwave_radiation",
+            "temperature_2m",
+            "relative_humidity_2m",
+            "wind_speed_10m",
+            "cloud_cover"
+        ],
+        "start_date": start_date,
+        "end_date": end_date,
+        "timezone": "Asia/Kolkata"
+    }
+
+    try:
+        response = requests.get(API_URL, params=params, timeout=(10, 60))
+        response.raise_for_status()
+        data = response.json()
+
+        hourly = data.get("hourly") or {}
+        times = hourly.get("time") or []
+
+        if not times:
+            raise ValueError("Open-Meteo returned no hourly records.")
+
+        fields = [
+            "shortwave_radiation",
+            "temperature_2m",
+            "relative_humidity_2m",
+            "wind_speed_10m",
+            "cloud_cover"
+        ]
+
+        grouped = {}
+
+        for index, timestamp in enumerate(times):
+            day = timestamp[:10]
+            grouped.setdefault(day, {field: [] for field in fields})
+
+            for field in fields:
+                values = hourly.get(field) or []
+                if index < len(values):
+                    value = values[index]
+                    try:
+                        number = float(value)
+                        if number >= 0:
+                            grouped[day][field].append(number)
+                    except (TypeError, ValueError):
+                        pass
+
+        result = {}
+
+        for day, values in grouped.items():
+            def average(field):
+                items = values[field]
+                return round(sum(items) / len(items), 2) if items else None
+
+            radiation_values = values["shortwave_radiation"]
+            daily_radiation = (
+                round(sum(radiation_values) / 1000, 3)
+                if radiation_values else None
+            )
+
+            result[day] = {
+                "source": "Open-Meteo",
+                "data_type": "selected_date_weather",
+                "date": day,
+                "temperature": average("temperature_2m"),
+                "humidity": average("relative_humidity_2m"),
+                "wind_speed": average("wind_speed_10m"),
+                "cloud_cover": average("cloud_cover"),
+                "current_conditions": None,
+                "forecast_radiation": daily_radiation,
+                "radiation_unit": "kWh/m²/day",
+                "radiation_status": (
+                    "estimated" if daily_radiation is not None
+                    else "unavailable"
+                )
+            }
+
+        expected_dates = {
+            (date.fromisoformat(start_date) + timedelta(days=offset)).isoformat()
+            for offset in range(
+                (date.fromisoformat(end_date) - date.fromisoformat(start_date)).days + 1
+            )
+        }
+
+        missing_dates = expected_dates - set(result)
+        if missing_dates:
+            raise ValueError(
+                f"Open-Meteo did not return these dates: {sorted(missing_dates)}"
+            )
+
+        return result
+
+    except requests.RequestException as error:
+        raise RuntimeError(
+            f"Seven-day Open-Meteo request failed: {error}"
+        ) from error
+    except (TypeError, ValueError, KeyError) as error:
+        raise RuntimeError(
+            f"Unable to process seven-day Open-Meteo data: {error}"
+        ) from error
