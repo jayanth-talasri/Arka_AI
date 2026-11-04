@@ -34,8 +34,8 @@ const RecommendationsPage = () => {
           weatherResponse,
         ] = await Promise.all([
           getRecommendations({ start: START_DATE, end: END_DATE }),
-          getAppliances(START_DATE, END_DATE),
-          getAnalytics(START_DATE, END_DATE),
+          getAppliances( START_DATE,  END_DATE ),
+          getAnalytics({ start: START_DATE, end: END_DATE }),
           getWeather(),
         ]);
 

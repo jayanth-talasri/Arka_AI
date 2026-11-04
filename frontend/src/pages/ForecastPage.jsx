@@ -128,7 +128,13 @@ const ForecastPage = () => {
                   <option value="yearly">Yearly</option>
                 </select>
               </div>
-              <input type="date" value={selectedDate} max={getToday()} onChange={(event) => setSelectedDate(event.target.value)} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-amber-400" />
+              <input
+                type="date"
+                value={selectedDate}
+                min={getToday()}
+                onChange={(event) => setSelectedDate(event.target.value)}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-amber-400"
+              />
             </div>
           </div>
         </div>
