@@ -186,7 +186,7 @@ const getInsights = async (req, res) => {
         error.response.data
       );
 
-      return res.status(502).json({
+      return res.status(error.response.status || 502).json({
         success: false,
         message: "AI backend insights request failed.",
         error: error.response.data,

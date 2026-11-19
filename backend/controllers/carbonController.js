@@ -51,7 +51,8 @@ const getCarbonImpact = async (req, res) => {
         const solarCapacity =
             Number(settings.solar_capacity);
 
-
+        const electricityRate =
+            Number(settings.electricity_rate ?? 8.0);
         const aiBackendUrl =
             process.env.AI_BACKEND_URL;
 
@@ -69,7 +70,8 @@ const getCarbonImpact = async (req, res) => {
                     longitude,
                     start,
                     end,
-                    solar_capacity: solarCapacity
+                    solar_capacity: solarCapacity,
+                    electricity_rate: electricityRate
                 },
 
                 headers: {
