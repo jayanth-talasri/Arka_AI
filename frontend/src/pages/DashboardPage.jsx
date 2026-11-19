@@ -5,6 +5,7 @@ import WeatherCard from "../components/cards/WeatherCard";
 import SavingsCard from "../components/cards/SavingsCard";
 import RecommendationCard from "../components/cards/RecommendationCard";
 import Loader from "../components/common/Loader";
+import { useDate } from "../context/DateContext";
 import ErrorMessage from "../components/common/ErrorMessage";
 import { getDashboardComparison } from "../services/dashboardService";
 import { calculateGrowth, getErrorMessage } from "../services/apiHelper";
@@ -34,7 +35,7 @@ const DashboardPage = () => {
   const [dashboard, setDashboard] = useState(null);
   const [previousDashboard, setPreviousDashboard] = useState(null);
   const [range, setRange] = useState("daily");
-  const [selectedDate, setSelectedDate] = useState(getToday);
+  const {selectedDate } = useDate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   useEffect(() => {
