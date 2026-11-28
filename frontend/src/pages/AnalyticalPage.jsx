@@ -161,7 +161,7 @@ const AnalyticalPage = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout showPeriodDropdown={true}>
         <div className="flex justify-center items-center min-h-[60vh]">
           <Loader />
         </div>
@@ -207,7 +207,7 @@ const AnalyticalPage = () => {
     Number(value || 0).toFixed(2);
 
   return (
-    <DashboardLayout>
+    <DashboardLayout showPeriodDropdown={true}>
       <div className="p-6 space-y-8">
         {/* HEADER */}
         <div>

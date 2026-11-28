@@ -19,12 +19,12 @@ const Sidebar = () => {
       <h2 className="text-2xl font-bold mb-8">☀️ ArkaAI</h2>
       <div className="space-y-3 flex-1">
         <NavLink to="/dashboard" className={linkClass}>🏠 Dashboard</NavLink>
+        <NavLink to="/weather" className={linkClass}>🌤️ Weather</NavLink>
         <NavLink to="/forecast" className={linkClass}>📈 Forecast</NavLink>
         <NavLink to="/recommendations" className={linkClass}>🤖 Recommendations</NavLink>
         <NavLink to="/analytics" className={linkClass}>📊 Analytics</NavLink>
-        <NavLink to="/settings" className={linkClass}>⚙️ Settings</NavLink>
-        <NavLink to="/weather" className={linkClass}>🌤️ Weather</NavLink>
         <NavLink to="/history" className={linkClass}>📜 History</NavLink>
+        <NavLink to="/settings" className={linkClass}>⚙️ Settings</NavLink>
       </div>
       <button
         type="button"

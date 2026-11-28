@@ -8,10 +8,11 @@ import DashboardPage from "../pages/DashboardPage";
 import ForecastPage from "../pages/ForecastPage";
 import AnalyticalPage from "../pages/AnalyticalPage";
 import RecommendationsPage from "../pages/RecommendationsPage";
-import SettingsPage from "../pages/SettingsPage";
+
 import NotFoundPage from "../pages/NotFoundPage";
 import WeatherPage from "../pages/WeatherPage";
 import HistoryPage from "../pages/HistoryPage";
+import SettingsPage from "../pages/SettingsPage";
 
 function AppRoutes() {
   return (
@@ -23,9 +24,10 @@ function AppRoutes() {
       <Route path="/forecast" element={<ProtectedRoute><ForecastPage /></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute><AnalyticalPage /></ProtectedRoute>} />
       <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      
       <Route path="/weather" element={<ProtectedRoute><WeatherPage /></ProtectedRoute>} />
       <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
     </Routes>
   );
 }

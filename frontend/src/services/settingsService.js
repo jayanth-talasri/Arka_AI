@@ -1,11 +1,27 @@
+
 import api from "./api";
+
+const parseAppliances = (value) => {
+  if (Array.isArray(value)) return value;
+  if (!value || typeof value !== "string") return [];
+  return value.split(",").map(item => item.trim()).filter(Boolean);
+};
 
 export const getSettings = async () => {
   const response = await api.get("/settings");
+  const data = response.data?.settings || null;
 
-  const data =
-    response.data?.settings ||
-    response.data;
+  if (!data) {
+    return {
+      location: "",
+      latitude: "",
+      longitude: "",
+      solarCapacity: "",
+      tariff: "",
+      appliances: [],
+      updatedAt: null
+    };
+  }
 
   return {
     location: data.location || "",
@@ -13,30 +29,21 @@ export const getSettings = async () => {
     longitude: data.longitude ?? "",
     solarCapacity: data.solar_capacity ?? "",
     tariff: data.electricity_rate ?? "",
-    appliances: data.appliances || [],
+    appliances: parseAppliances(data.appliance_info),
+    updatedAt: data.updated_at || null
   };
 };
 
 export const updateSettings = async (data) => {
   const payload = {
-    location: data.location,
-    latitude:
-      data.latitude === ""
-        ? undefined
-        : Number(data.latitude),
-    longitude:
-      data.longitude === ""
-        ? undefined
-        : Number(data.longitude),
+    location: data.location.trim(),
+    latitude: Number(data.latitude),
+    longitude: Number(data.longitude),
     solar_capacity: Number(data.solarCapacity),
     electricity_rate: Number(data.tariff),
-    appliances: data.appliances || [],
+    appliance_info: (data.appliances || []).join(", ")
   };
 
-  const response = await api.put(
-    "/settings",
-    payload
-  );
-
+  const response = await api.put("/settings", payload);
   return response.data;
 };

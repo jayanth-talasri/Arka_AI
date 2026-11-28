@@ -1,52 +1,100 @@
-const toCompact = (dateObj) => {
-  return dateObj.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }).replaceAll('-', '');
-};
 
-const parseLocal = (isoDateStr) => {
-  const [y, m, d] = isoDateStr.split('-').map(Number);
-  return new Date(y, m - 1, d);
-};
-
-export const getQueryDatesForPage = (pageType, selectedDate, periodMode = 'daily') => {
-  const base = parseLocal(selectedDate);
-
-  switch (pageType) {
-    // 1. Single-day pages: Recommendations & Weather
-    case 'recommendations':
-    case 'weather': {
-      const compact = toCompact(base);
-      return { start: compact, end: compact };
-    }
-
-    // 2. Forecast: Uses selectedDate as Day 1 and fetches 7 days ahead
-    case 'forecast': {
-      const end = new Date(base);
-      end.setDate(base.getDate() + 6);
-      return { start: toCompact(base), end: toCompact(end) };
-    }
-
-    // 3. Dashboard & Analytics: Adapts dynamically to Daily / Weekly / Monthly dropdown
-    case 'dashboard':
-    case 'analytics': {
-      const start = new Date(base);
-      if (periodMode === 'weekly') {
-        start.setDate(base.getDate() - 6); // 7-day window ending on selectedDate
-      } else if (periodMode === 'monthly') {
-        start.setDate(base.getDate() - 29); // 30-day window ending on selectedDate
-      }
-      return { start: toCompact(start), end: toCompact(base) };
-    }
-
-    // 4. History: Shows trailing 7 days up to selectedDate (or single day if daily)
-    case 'history': {
-      const start = new Date(base);
-      start.setDate(base.getDate() - 6);
-      return { start: toCompact(start), end: toCompact(base) };
-    }
-
-    default: {
-      const compact = toCompact(base);
-      return { start: compact, end: compact };
-    }
+const parseLocalDate = (value) => {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    throw new Error(`Invalid selected date: ${value}`);
   }
+
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const formatCompactDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}${month}${day}`;
+};
+
+const addDays = (date, days) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
+const getPeriodStart = (date, periodMode) => {
+  const start = new Date(date);
+
+  switch (periodMode) {
+    case "daily":
+      return start;
+
+    case "weekly": {
+      // Monday is the first day of the week.
+      const daysFromMonday = (start.getDay() + 6) % 7;
+      start.setDate(start.getDate() - daysFromMonday);
+      return start;
+    }
+
+    case "monthly":
+      start.setDate(1);
+      return start;
+
+    case "yearly":
+      start.setMonth(0, 1);
+      return start;
+
+    default:
+      throw new Error(`Unsupported period mode: ${periodMode}`);
+  }
+};
+
+export const getQueryDatesForPage = (
+  pageType,
+  selectedDate,
+  periodMode = "daily"
+) => {
+  const selected = parseLocalDate(selectedDate);
+
+  // These pages currently request data for one selected day.
+  // Their existing API behavior is intentionally preserved.
+  if (pageType === "weather" || pageType === "recommendations") {
+    const date = formatCompactDate(selected);
+
+    return {
+      start: date,
+      end: date,
+    };
+  }
+
+  // Historical pages must not request dates after the selected date.
+  if (
+    pageType === "dashboard" ||
+    pageType === "analytics" ||
+    pageType === "history"
+  ) {
+    const start = getPeriodStart(selected, periodMode);
+
+    return {
+      start: formatCompactDate(start),
+      end: formatCompactDate(selected),
+    };
+  }
+
+  // Forecast keeps its own future-range calculation in ForecastPage.
+  if (pageType === "forecast") {
+    const end = addDays(selected, 6);
+
+    return {
+      start: formatCompactDate(selected),
+      end: formatCompactDate(end),
+    };
+  }
+
+  const date = formatCompactDate(selected);
+
+  return {
+    start: date,
+    end: date,
+  };
 };
