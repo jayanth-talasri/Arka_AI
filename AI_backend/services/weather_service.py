@@ -1,3 +1,4 @@
+
 import pandas as pd
 def weather_summary(df, live_weather=None):
     required_columns = ["temperature", "humidity", "wind_speed"]
@@ -24,19 +25,26 @@ def weather_summary(df, live_weather=None):
             values = valid_df[column].dropna()
             nasa_weather[column] = valid_value(values.iloc[-1]) if not values.empty else None
     live_weather = live_weather or {}
+    live_values = {column: valid_value(live_weather.get(column)) for column in required_columns}
     weather = {}
     for column in required_columns:
-        live_value = valid_value(live_weather.get(column))
-        weather[column] = live_value if live_value is not None else nasa_weather.get(column)
+        weather[column] = live_values[column] if live_values[column] is not None else nasa_weather.get(column)
     if all(value is None for value in weather.values()):
         condition = "Unavailable"
-    elif weather["temperature"] is not None:
-        condition = "Sunny" if weather["temperature"] > 28 else "Cloudy"
+        source = "Unavailable"
     else:
-        condition = "Partly cloudy"
-    source = "Open-Meteo" if any(valid_value(live_weather.get(column)) is not None for column in required_columns) else "NASA POWER"
-    if any(weather[column] is None for column in required_columns):
-        source = "Mixed or incomplete"
+        temperature = weather["temperature"]
+        cloud_cover = valid_value(live_weather.get("cloud_cover"))
+        if cloud_cover is not None:
+            condition = "Clear" if cloud_cover < 20 else "Partly cloudy" if cloud_cover < 60 else "Cloudy"
+        elif temperature is not None:
+            condition = "Sunny" if temperature > 28 else "Cloudy"
+        else:
+            condition = "Partly cloudy"
+        if any(value is not None for value in live_values.values()):
+            source = "Open-Meteo" if all(value is not None for value in live_values.values()) else "Open-Meteo (incomplete)"
+        else:
+            source = "NASA POWER" if all(nasa_weather.get(column) is not None for column in required_columns) else "NASA POWER (incomplete)"
     return {
         "temperature": weather["temperature"],
         "humidity": weather["humidity"],

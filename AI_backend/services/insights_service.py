@@ -1,3 +1,4 @@
+
 from services.recommendation import generate_recommendation
 
 def generate_insights(prediction, weather):
@@ -21,7 +22,13 @@ def generate_insights(prediction, weather):
         )
 
     # Temperature
-    if weather["temperature"] > 35:
+    temperature = weather.get("temperature")
+
+    if temperature is None:
+        insights.append(
+            "Temperature data is unavailable for this period."
+        )
+    elif temperature > 35:
         insights.append(
             "High temperature may slightly reduce panel efficiency."
         )
@@ -31,7 +38,13 @@ def generate_insights(prediction, weather):
         )
 
     # Humidity
-    if weather["humidity"] > 80:
+    humidity = weather.get("humidity")
+
+    if humidity is None:
+        insights.append(
+            "Humidity data is unavailable for this period."
+        )
+    elif humidity > 80:
         insights.append(
             "High humidity may reduce solar efficiency."
         )
