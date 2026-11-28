@@ -1,6 +1,6 @@
 const axios = require("axios");
 const {
-    getUserSettings
+    getUserSettings, validateUserSettings
 } = require("../services/userSettingsService");
 const getForecast = async (req, res) => {
     try {
@@ -22,8 +22,16 @@ const getForecast = async (req, res) => {
         // ==========================================
         // GET USER SETTINGS
         // ==========================================
-        const settings =
-            await getUserSettings(userId);
+        const settings = await getUserSettings(userId);
+        const settingsError = validateUserSettings(settings);
+
+        if (settingsError) {
+            return res.status(settings ? 400 : 404).json({
+                success: false,
+                message: settingsError
+            });
+        }
+
         if (!settings) {
             return res.status(404).json({
                 success: false,

@@ -1,5 +1,6 @@
 const axios = require("axios");
 const pool = require("../config/db");
+const { getUserSettings, validateUserSettings } = require("../services/userSettingsService");
 
 const getDashboard = async (req, res) => {
     try {
@@ -9,7 +10,6 @@ const getDashboard = async (req, res) => {
         // ==========================================
 
         const userId = req.user.id;
-
         const { start, end } = req.query;
 
         if (!start || !end) {
@@ -29,29 +29,15 @@ const getDashboard = async (req, res) => {
         // 2. GET USER SETTINGS
         // ==========================================
 
-        const settingsResult = await pool.query(
-            `
-            SELECT
-                latitude,
-                longitude,
-                solar_capacity,
-                electricity_rate
-            FROM public.user_settings
-            WHERE user_id = $1
-            `,
-            [userId]
-        );
+        const settings = await getUserSettings(userId);
+        const settingsError = validateUserSettings(settings);
 
-        if (settingsResult.rows.length === 0) {
-
-            return res.status(404).json({
+        if (settingsError) {
+            return res.status(settings ? 400 : 404).json({
                 success: false,
-                message: "User settings not found. Please configure settings first."
+                message: settingsError
             });
-
         }
-
-        const settings = settingsResult.rows[0];
 
         const latitude = Number(settings.latitude);
         const longitude = Number(settings.longitude);
@@ -90,10 +76,13 @@ const getDashboard = async (req, res) => {
             `${aiBackendUrl}/dashboard`,
             {
                 params: {
-                    latitude,
-                    longitude,
+                    latitude : Number(settings.latitude),
+                    longitude : Number(settings.longitude),
                     start,
-                    end
+                    end,
+                    solar_capacity: Number(settings.solar_capacity),
+                    electricity_rate: Number(settings.electricity_rate),
+                    appliance_info: settings.appliance_info || ""
                 },
 
                 headers: {

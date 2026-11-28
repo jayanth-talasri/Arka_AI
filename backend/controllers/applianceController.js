@@ -1,5 +1,9 @@
 const axios = require("axios");
 const pool = require("../config/db");
+const {
+    getUserSettings,
+    validateUserSettings
+} = require("../services/userSettingsService");
 
 const getAppliances = async (req, res) => {
 
@@ -29,31 +33,15 @@ const getAppliances = async (req, res) => {
         // GET USER SETTINGS
         // ==========================================
 
-        const result = await pool.query(
-            `
-            SELECT
-                location,
-                latitude,
-                longitude,
-                solar_capacity,
-                electricity_rate,
-                appliance_info
-            FROM public.user_settings
-            WHERE user_id = $1
-            `,
-            [userId]
-        );
+        const settings = await getUserSettings(userId);
+        const settingsError = validateUserSettings(settings);
 
-        if (result.rows.length === 0) {
-
-            return res.status(404).json({
+        if (settingsError) {
+            return res.status(settings ? 400 : 404).json({
                 success: false,
-                message: "User settings not found"
+                message: settingsError
             });
-
         }
-
-        const settings = result.rows[0];
 
         // ==========================================
         // VALIDATE COORDINATES
@@ -99,7 +87,11 @@ const getAppliances = async (req, res) => {
                 latitude: Number(settings.latitude),
                 longitude: Number(settings.longitude),
                 start,
-                end
+                end,
+
+                solar_capacity: Number(settings.solar_capacity),
+                electricity_rate: Number(settings.electricity_rate),
+                appliance_info: settings.appliance_info || ""
             },
 
             headers: {
